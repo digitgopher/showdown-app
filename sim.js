@@ -93,6 +93,7 @@ $(window).load(function() {
     var batters = [];
     var batter = [];
     var pitchers = [];
+    var defense = [];
     var pitcher = [];
     var group = [];
     //x.push(inputValues[0].value);
@@ -113,7 +114,7 @@ $(window).load(function() {
       }
       else{
         // if the next value is one of a new player (3 groups of values per player: name, chart vals, and other attributes)
-        if(++track % 3 == 1){
+        if(++track % 2 == 1){
           // reset the track
           track = 1;
           // add the group to the batter, and batter to batters, and reset for new batter
@@ -144,7 +145,9 @@ $(window).load(function() {
     
     batter.push(group); // Finish adding last group
     batters.push(batter);
+    // Now pull off the non-batters
     pitchers.push(batters.shift());
+    defense = batters.pop();
     // If only the first is input and the simulation is to be run against that batter only, then fill'er up with batter[0]!
     if ($('.num-bat-rad:checked').val() != 9){
       if ($('.num-bat-rad:checked').val() == 1){
