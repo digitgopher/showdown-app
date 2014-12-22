@@ -46,16 +46,6 @@ p{
   padding: 10px;
   margin: 25px auto 25px auto;
 }
-/* il stands for input-label */
-.il-n,.il-c,.il-a{
-  display:block;
-  position: relative;
-
-}
-.il-ob{
-  display:block;
-  font-weight:bold;
-}
 .chart-select{
   display:inline-block;
   padding: 0px;
@@ -65,7 +55,7 @@ p{
   display:inline-block;
   background-color: #DADCE8;
   border: 1px solid lightblue;
-  max-width: 450px;
+  /*max-width: 450px;*/
 }
 .pitcher-input{
   display:block;
