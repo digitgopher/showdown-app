@@ -78,9 +78,7 @@ div + div{
 .run{
   background-color: #FFFFBF;
 }
-.num-bat-rad{
-  
-}
+
 #run-simulation{
   margin:10px 0 10px 0;
   padding:5px;
@@ -103,6 +101,7 @@ div + div{
 }
 .results-after{
   margin-top: 10px;
+  background-color:#FFCC99;
 }
 .score-results{
   margin-top: 10px;

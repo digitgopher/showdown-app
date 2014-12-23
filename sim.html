@@ -186,7 +186,7 @@ Simulate MLB Showdown games and give the results!
         </table>
         
       </div>
-      <div class="defense-input">
+      <div class="defense-input" style="display:none">
         <table>
           <tr><th>Position</th><th>Fielding</th></tr>
           <tr>
@@ -227,8 +227,8 @@ Simulate MLB Showdown games and give the results!
 
     </form>
     <div class="run">
-      Full Lineup<input type="radio" class="num-bat-rad" name="num-batters" value="9" checked="true" autocomplete="off"/>
-      Use First Batter Only<input type="radio" class="num-bat-rad" name="num-batters" value="1" autocomplete="off"/>
+      Fill Lineup with First Batter<input id="use-one-bat" type="checkbox">
+      Use Defense and Baserunning<input id="use-defense" type="checkbox">
       <button id="run-simulation" name="run" type="button" value="Run Simulation" >Run Simulation</button>
     </div>
     <div class="results-before">

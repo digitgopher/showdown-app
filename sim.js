@@ -67,18 +67,12 @@ $(window).load(function() {
   batChartClassNames = ["p1c","b1c","b2c","b3c","b4c","b5c","b6c","b7c","b8c","b9c"];
   setValidation(9,individualSum20Listeners,batChartClassNames);
   
-  // Change form on radio buttons
-  $(".num-bat-rad").change(function() {
-    if ($('.num-bat-rad:checked').val() == 1) {
-      $(".last-eight-batters").hide();
-      // TODO: Update validators as needed
-    }
-    else if ($('.num-bat-rad:checked').val() == 9) {
-      $(".last-eight-batters").show();
-    }
-    else {
-      console.error("Radio button select value error.");
-    }
+  // Change form on user selections
+  $("#use-one-bat").change(function() {
+    $(".last-eight-batters").toggle();
+  });
+  $("#use-defense").change(function() {
+    $(".defense-input").toggle();
   });
   
   // Add the validator to a single group:
@@ -148,17 +142,17 @@ $(window).load(function() {
     // Now pull off the non-batters
     pitchers.push(batters.shift());
     defense = batters.pop();
+    
     // If only the first is input and the simulation is to be run against that batter only, then fill'er up with batter[0]!
-    if ($('.num-bat-rad:checked').val() != 9){
-      if ($('.num-bat-rad:checked').val() == 1){
-        batters = new Array(batters.shift());
-        for (var i = 1; i <= 8; i++) {
-          batters.push(batters[0]);
-        }
+    if ($('#use-one-bat')[0].checked){
+      batters = new Array(batters.shift());
+      for (var i = 1; i <= 8; i++) {
+        batters.push(batters[0]);
       }
-      else {
-        console.error("Again, radio button is not set to either 9 or 1.");
-      }
+    }
+    // Throw away defense if it is not checked
+    if (!$('#use-defense')[0].checked){
+      defense = 0;
     }
     
     // console.log(batters);
@@ -168,7 +162,7 @@ $(window).load(function() {
     // Now we have all the input data, print stuff out to confirm:
     
     // Run the simulation and get results
-    var results = $.parseJSON(sim(batters, pitchers));
+    var results = $.parseJSON(sim(batters, pitchers, defense));
     var score = results.pop();
     var presult = results.pop();
     // console.log(results);
@@ -221,7 +215,7 @@ $(window).load(function() {
   //    * passed exactly 9 batters and 1 pitcher. TODO: pass single batter, or multiple pitchers with IP
   //    * return the average number of each result as a percentage of average number of plate appearances
   // The function simulates a large number of innings played, and does that many times to average the results. 
-  function sim(batters, pitchers){
+  function sim(batters, pitchers, defense){
 
     // Usage
     // Get first batter: batters[0]
@@ -244,6 +238,10 @@ $(window).load(function() {
     // ]
     // console.log(batters);
     // console.log(pitchers);
+    
+    var useDefense = defense ? true : false;
+    var temp = new Array();
+    
     var bat0Map= {
       0 : "so",
       1 : "gb",
@@ -321,7 +319,7 @@ $(window).load(function() {
       // console.log(sum);
     // }
 
-    var temp = new Array(); // to contain results of each simulation to be averaged together
+    // to contain results of each simulation to be averaged together
     
     // Run the simulation 30 times and then get averages.
     // TODO: Let user input this to tradeoff accuracy for speed
