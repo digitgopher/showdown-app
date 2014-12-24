@@ -73,6 +73,7 @@ $(window).load(function() {
   });
   $("#use-defense").change(function() {
     $(".defense-input").toggle();
+    $(".speed-input").toggle();
   });
   
   // Add the validator to a single group:
@@ -84,11 +85,11 @@ $(window).load(function() {
   $('#run-simulation').on("click", function() {
     // Collect all the input data
     var inputValues = $('#inputForm').serializeArray();
-    var batters = [];
-    var batter = [];
-    var pitchers = [];
-    var defense = [];
-    var pitcher = [];
+    var batters = {}; // Contains a set of (key = batter name, value = batter object) objects
+    var batter = {}; // Contains the attributes of a batter and their values
+    var pitchers = {};
+    var defense = {}; // Contains the raw defense array
+    var pitcher = {};
     var group = [];
     //x.push(inputValues[0].value);
     // The first name parameter we expect
@@ -155,9 +156,10 @@ $(window).load(function() {
       defense = 0;
     }
     
-    // console.log(batters);
-    // console.log(pitchers);
-    // return;
+    console.log(batters);
+    console.log(pitchers);
+    console.log(defense);
+    return;
 
     // Now we have all the input data, print stuff out to confirm:
     
@@ -363,7 +365,7 @@ $(window).load(function() {
           }
           // Not an out result
           else{
-            advanceRunners();
+            advanceRunners(useDefense);
           }
           // Save statistics for display
           logResult();
@@ -455,34 +457,14 @@ $(window).load(function() {
     }
 
     // Also keeps the score
-    function advanceRunners(){
-      //console.log(abres);
+    function advanceRunners(useDefense){
       switch(abres){
         case "bb":
-          bases[0] ? // check if runner on first
-            bases[1] ? // check if runner on second
-              bases[2] ? // check if runner on third
-                score++ // bases loaded, one runner scores!
-              : bases[2] = true // nobody on third, move the runner from second to third
-            : bases[1] = true // nobody on second, move the runner on first to second
-          : bases[0] = true; // nobody was on first to begin with
+          result_bb();
           break;
         case "1b":
-          if(bases[2]){ // runner on third scores
-            score++;
-            bases[2] = false;
-          }
-          if(bases[1]){ // runner on second goes to third
-            bases[1] = false;
-            bases[2] = true;
-          }
-          if(bases[0]){ // runner on first goes to second, batter occupies first
-            bases[1] = true;
-          }else{
-            bases[0] = true;
-          }
+          result_1b();
           break;
-        // **********1b and 1b+ are the same for now!***********
         case "1b+":
           if(bases[2]){ // runner on third scores
             score++;
@@ -492,10 +474,11 @@ $(window).load(function() {
             bases[1] = false;
             bases[2] = true;
           }
-          if(bases[0]){ // runner on first goes to second, batter occupies first
+          // don't need this if clause, but it would make even less sense without it...
+          if(bases[0]){ // either runner on first goes to second and batter occupies first, or batter takes second because it is open
             bases[1] = true;
           }else{
-            bases[0] = true;
+            bases[1] = true;
           }
           break;
         case "2b":
@@ -545,6 +528,106 @@ $(window).load(function() {
         default:
           console.log("Error: Can't advance runners because hittype not valid.");
       }
+    }
+    
+    function result_gb(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function result_fb(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    // Move runners after a walk
+    function result_bb(){
+      // No difference if using defense
+      bases[0] ? // check if runner on first
+        bases[1] ? // check if runner on second
+          bases[2] ? // check if runner on third
+            score++ // bases loaded, one runner scores!
+          : bases[2] = true // nobody on third, move the runner from second to third
+        : bases[1] = true // nobody on second, move the runner on first to second
+      : bases[0] = true; // nobody was on first to begin with
+    }
+    // Move runners after a single
+    function result_1b(){
+      if(!useDefense){
+        if(bases[2]){ // runner on third scores
+          score++;
+          bases[2] = false;
+        }
+        if(bases[1]){ // runner on second goes to third
+          bases[1] = false;
+          bases[2] = true;
+        }
+        if(bases[0]){ // runner on first goes to second, batter occupies first
+          bases[1] = true;
+        }else{
+          bases[0] = true;
+        }
+      }
+      else{ // Use defense
+        if(bases[2]){ // runner on third scores
+          score++;
+          bases[2] = false;
+        }
+        if(bases[1]){ // runner on second goes to third, then tries for home
+          bases[1] = false;
+          bases[2] = true;
+        }
+        if(bases[0]){ // runner on first goes to second, batter occupies first
+          bases[1] = true;
+        }else{
+          bases[0] = true;
+        }
+      }
+    }
+    function result_1bplus(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function result_2b(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function result_3b(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function result_hr(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function c(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+      return defense[0];
+    }
+    function inf(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
+    }
+    function of(){
+      if(!useDefense){
+        console.log("We shouldn't be using defense!");
+      }
+      
     }
 
     function logResult(){
