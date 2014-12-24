@@ -4,26 +4,23 @@ $(window).load(function() {
   // Pass the classname of a set of chart selects, and it will ensure that they add to 20
   function chartValidateSum(classname) {
     var sum = 0;
-    $("select[name='"+classname+"']").each(function(){
+    $("select."+classname).each(function(){
       sum += Number($(this).val());
     });
     if(sum == 20){
-      $("select[name="+classname+"]").css("outline", "inherit");
-      //$("#run-simulation").prop("disabled",false);
+      $("select."+classname).css("outline", "inherit");
     }
     else if(sum > 20){
-      $("select[name="+classname+"]").css("outline", "2px solid #CF0000");
-      //$("#run-simulation").prop("disabled",true);
+      $("select."+classname).css("outline", "2px solid #CF0000");
     }
     else {
-      $("select[name="+classname+"]").css("outline", "2px solid #FF7D7D");
-      //$("#run-simulation").prop("disabled",true);
+      $("select."+classname).css("outline", "2px solid #FF7D7D");
     }
     console.log(sum);
   }
   // So we can make 9 of these in a loop we need to make a closure!
   function addchartValidateSum(name){
-    return $("select[name='"+name+"']").change(function() {
+    return $("select."+name).change(function() {
       chartValidateSum(name);
     });
   }
@@ -36,7 +33,7 @@ $(window).load(function() {
     var sum = 0;
     for (var i = 0; i < listOfClassnames.length; i++){
       sum = 0;
-      $("select[name='"+listOfClassnames[i]+"']").each(function(){
+      $("select."+listOfClassnames[i]).each(function(){
         sum += Number($(this).val());
       });
       if(sum != 20){
@@ -56,7 +53,7 @@ $(window).load(function() {
     for (var i = 0; i < batChartClassNames.length; i++){
       individualSum20Listeners[i] = addchartValidateSum(batChartClassNames[i]);
     }
-    $("select[name='p1c'], select[name='b1c'], select[name='b2c'], select[name='b3c'], select[name='b4c'], select[name='b5c'], select[name='b6c'], select[name='b7c'], select[name='b8c'], select[name='b9c']").change(function() {
+    $("select.p1c, select.b1c, select.b2c, select.b3c, select.b4c, select.b5c, select.b6c, select.b7c, select.b8c, select.b9c").change(function() {
       chartValidateAll(batChartClassNames);
     });
   }
