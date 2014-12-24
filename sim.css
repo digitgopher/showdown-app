@@ -46,13 +46,14 @@ p{
   padding: 10px;
   margin: 25px auto 25px auto;
 }
+.order-label{
+    border: none;
+    background: none;
+}
 .chart-select{
   display:inline-block;
   padding: 0px;
   margin: 0px;
-}
-.player-name{
-  background-color: #BFEFFF;
 }
 .batter-input,
 .defense-input,

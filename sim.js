@@ -70,6 +70,7 @@ $(window).load(function() {
   // Change form on user selections
   $("#use-one-bat").change(function() {
     $(".last-eight-batters").toggle();
+    $(".lineup-order").toggle();
   });
   $("#use-defense").change(function() {
     $(".defense-input").toggle();
@@ -88,61 +89,58 @@ $(window).load(function() {
     var batters = {}; // Contains a set of (key = batter name, value = batter object) objects
     var batter = {}; // Contains the attributes of a batter and their values
     var pitchers = {};
+    // Note: defense is treated the same way as a player for getting the input (set off with a player-name value)
     var defense = {}; // Contains the raw defense array
     var pitcher = {};
-    var group = [];
     //x.push(inputValues[0].value);
     // The first name parameter we expect
     var curGroup = 'p1c';
     var track = 1;
     var curValue = '';
+    var previous_name = '';
     // Create a custom data structure
     for (var i = 0; i < inputValues.length; i++){
-      // we want numbers! except for the position, this casts everything to a number
-      curValue = inputValues[i].value;
-      if(!isNaN(curValue)){
-        curValue = Number(curValue);
-      }
-      // do the logics
-      if(inputValues[i].name == curGroup){
-        group.push(curValue);
+      var n = inputValues[i].name;
+      var v = inputValues[i].value;
+      // New player
+      if(n == "player-name"){
+        // Push old player and make new one
+        batters[previous_name] = batter;
+        batter = {};
+        // Save current name
+        previous_name = v;
+        // Track the order of input sets, as objects are unordered
+        batter["order"] = track++;
       }
       else{
-        // if the next value is one of a new player (3 groups of values per player: name, chart vals, and other attributes)
-        if(++track % 2 == 1){
-          // reset the track
-          track = 1;
-          // add the group to the batter, and batter to batters, and reset for new batter
-          batter.push(group);
-          batters.push(batter);
-          batter = [];
-        }
-        else{
-          batter.push(group);
-        }
-        // set new group and add the value
-        group = [];
-        group.push(curValue);
+        batter[n] = v;
       }
-      // console.log(track);
-      // console.log(group);
-      // console.log(batter);
-      // console.log(batters);
-      // console.log("--------------------------------------------");
-      curGroup = inputValues[i].name;
+      
     }
-    // Loop exits before finishing the job.
-    // This is simply the last player that the loop processed. In the format 
-    // where we have only one pitcher and it happens to be the last player, 
-    // it works out cleanly. In sum: The player being added here is purely
-    // a byproduct of the loop logic combined with form structure AND CAN EASILY
-    // CHANGE SO WATCH IT.
-    
-    batter.push(group); // Finish adding last group
-    batters.push(batter);
-    // Now pull off the non-batters
-    pitchers.push(batters.shift());
-    defense = batters.pop();
+    // Get rid of first ghost object (product of the algorithm)
+    delete batters[''];
+    // Push last batter as algorithm ends without finishing the job.
+    batters[previous_name] = batter;
+    // Find and separate the pitcher
+    loop1:
+      for(var key in batters){
+        var obj = batters[key];
+    loop2:
+        for(var prop in obj){
+          // Important check that property is not the inherited prototype prop
+          if(obj.hasOwnProperty(prop)){
+            if(prop == 'ip'){ // or any other pitcher specific attribute
+              // Found it!
+              pitchers[key] = obj;
+              delete batters[key];
+              break loop1;
+            }
+          }
+        }
+      }
+    // Separate defense
+    defense = batters['defense'];
+    delete batters['defense'];
     
     // If only the first is input and the simulation is to be run against that batter only, then fill'er up with batter[0]!
     if ($('#use-one-bat')[0].checked){
