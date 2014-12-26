@@ -83,16 +83,16 @@ $(window).load(function() {
   $('#run-simulation').on("click", function() {
     // Collect all the input data
     var inputValues = $('#inputForm').serializeArray();
-    var batters = {}; // Contains a set of (key = batter name, value = batter object) objects
+    var batters = []; // Contains a set of (key = batter name, value = batter object) objects
     var batter = {}; // Contains the attributes of a batter and their values
-    var pitchers = {};
+    var pitchers = [];
     // Note: defense is treated the same way as a player for getting the input (set off with a player-name value)
     var defense = {}; // Contains the raw defense array
     var pitcher = {};
     //x.push(inputValues[0].value);
     // The first name parameter we expect
     var curGroup = 'p1c';
-    var track = 1;
+    var track = 0;
     var curValue = '';
     var previous_name = '';
     // Create a custom data structure
@@ -102,7 +102,8 @@ $(window).load(function() {
       // New player
       if(n == "player-name"){
         // Push old player and make new one
-        batters[previous_name] = batter;
+        batter["name"] = previous_name;
+        batters.push(batter);
         batter = {};
         // Save current name
         previous_name = v;
@@ -114,30 +115,14 @@ $(window).load(function() {
       }
       
     }
-    // Get rid of first ghost object (product of the algorithm)
-    delete batters[''];
     // Push last batter as algorithm ends without finishing the job.
-    batters[previous_name] = batter;
+    batters.push(batter);
+    // Get rid of first ghost object (product of the algorithm)
+    batters.shift();
     // Find and separate the pitcher
-    loop1:
-      for(var key in batters){
-        var obj = batters[key];
-    loop2:
-        for(var prop in obj){
-          // Important check that property is not the inherited prototype prop
-          if(obj.hasOwnProperty(prop)){
-            if(prop == 'ip'){ // or any other pitcher specific attribute
-              // Found it!
-              pitchers[key] = obj;
-              delete batters[key];
-              break loop1;
-            }
-          }
-        }
-      }
+    pitchers.push(batters.shift());
     // Separate defense
-    defense = batters['defense'];
-    delete batters['defense'];
+    defense = batters.pop();
     
     // If only the first is input and the simulation is to be run against that batter only, then fill'er up with batter[0]!
     if ($('#use-one-bat')[0].checked){
@@ -151,10 +136,6 @@ $(window).load(function() {
       defense = 0;
     }
     
-    console.log(batters);
-    console.log(pitchers);
-    console.log(defense);
-    return;
 
     // Now we have all the input data, print stuff out to confirm:
     
@@ -239,7 +220,11 @@ $(window).load(function() {
     var useDefense = defense ? true : false;
     var temp = new Array();
     
-    var bat0Map= {
+    // Cannot put non-chart values in these mappings!
+    var batMapStrict = ["so","gb","fb","bb","1b","1b+","2b","3b","hr"];
+    var pitMapStrict = ["pu","so","gb","fb","bb","1b","2b","hr"];
+    
+    var batMap = {
       0 : "so",
       1 : "gb",
       2 : "fb",
@@ -262,17 +247,11 @@ $(window).load(function() {
       "hr" : 8,
       "pu" : 2 // batter sees a flyball
     }
-    var bat1Map= {
-      0 : "ob",
-      1 : "sp",
-      2 : "pos",
-      3 : "f"
-    }
     // Example pitchers data:
     // var pitchers = [
       // [[2,5,5,4,2,1,1,0],[4,""]]
     // ]
-    var pit0Map= {
+    var pitMap= {
       0 : "pu",
       1 : "so",
       2 : "gb",
@@ -321,7 +300,7 @@ $(window).load(function() {
     // Run the simulation 30 times and then get averages.
     // TODO: Let user input this to tradeoff accuracy for speed
     // 10000 is a good speed/accuracy ratio
-    var sig = 1000; // sig = statistically significant
+    var sig = 30; // sig = statistically significant
     for (var a = 0; a < sig; a++){
       // Prepare everything for a simulation
       var bases = [false,false,false]; // Nobody is on base to start with!
@@ -383,7 +362,7 @@ $(window).load(function() {
       //console.log(batterTallies);
       // Transform what logResult does into the statistics that will be output
       temp.push(transformRawResultsToStatistics());
-      
+      //return;
       //console.log("Simulation results: ");
     
     }
@@ -412,7 +391,7 @@ $(window).load(function() {
       // console.log(batters[curBatter][0]);
       // Which chart?
       var pitch = Math.ceil(Math.random() * 20);
-      if(pitch + pitchers[0][1][0] > batters[curBatter][1][0]){ // pitcher has advantage!
+      if(pitch + Number(pitchers[0]['c']) > Number(batters[curBatter]['ob'])){ // pitcher has advantage!
         return getSwingResult("p");
       }
       else{ // batter has advantage!
@@ -427,21 +406,19 @@ $(window).load(function() {
       var inc = 0;
       switch(chart){
         case "p":
-          for(var x = 0; x < pitchers[0][0].length; x++) {
-            inc += pitchers[0][0][x];
+          for(var x = 0; x < pitMapStrict.length; x++) {
+            inc += Number(pitchers[0][pitMapStrict[x]]);
             if(swing <= inc){
-              //console.log(pit0Map[x]);
-              return pit0Map[x];
+              return pitMap[x];
             }
           }
           console.log("Error: No result found on pitcher's chart.");
           break;
         case "b":
-          for(var x = 0; x < batters[curBatter][0].length; x++) {
-            inc += batters[curBatter][0][x];
+          for(var x = 0; x < batMapStrict.length; x++) {
+            inc += Number(batters[curBatter][batMapStrict[x]]);
             if(swing <= inc){
-              //console.log(bat0Map[x]);
-              return bat0Map[x];
+              return batMap[x];
             }
           }
           console.log("Error: No result found on batter's chart.");
@@ -526,15 +503,9 @@ $(window).load(function() {
     }
     
     function result_gb(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     function result_fb(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     // Move runners after a walk
@@ -582,27 +553,15 @@ $(window).load(function() {
       }
     }
     function result_1bplus(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     function result_2b(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     function result_3b(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     function result_hr(){
-      if(!useDefense){
-        console.log("We shouldn't be using defense!");
-      }
       
     }
     function c(){
@@ -627,8 +586,8 @@ $(window).load(function() {
 
     function logResult(){
       //console.log(abres);
-      pitcherTallies[0][0][pit0Map[abres]]++;
-      batterTallies[curBatter][0][bat0Map[abres]]++;
+      pitcherTallies[0][0][pitMap[abres]]++;
+      batterTallies[curBatter][0][batMap[abres]]++;
     }
     
     // build 'results'
@@ -643,16 +602,16 @@ $(window).load(function() {
       for (var i = 0; i < batterTallies.length; i++) {
         var PA = batterTallies[i][0].reduce(function(a, b) {return a + b;});
        // remember PU are eaten up by FB
-        r.push({"SO/PA": batterTallies[i][0][bat0Map["so"]] / PA, 
-        "GB/PA": batterTallies[i][0][bat0Map["gb"]] / PA, 
-        "FB/PA": batterTallies[i][0][bat0Map["fb"]] / PA, 
-        "BB/PA": batterTallies[i][0][bat0Map["bb"]] / PA, 
-        "1B/PA": batterTallies[i][0][bat0Map["1b"]] / PA, 
-        "1B+/PA": batterTallies[i][0][bat0Map["1b+"]] / PA, 
-        "2B/PA": batterTallies[i][0][bat0Map["2b"]] / PA, 
-        "3B/PA": batterTallies[i][0][bat0Map["3b"]] / PA, 
-        "HR/PA": batterTallies[i][0][bat0Map["hr"]] / PA, 
-        "OBP": (batterTallies[i][0][bat0Map["bb"]] + batterTallies[i][0][bat0Map["1b"]] + batterTallies[i][0][bat0Map["1b+"]] + batterTallies[i][0][bat0Map["2b"]] + batterTallies[i][0][bat0Map["3b"]] + batterTallies[i][0][bat0Map["hr"]]) / PA
+        r.push({"SO/PA": batterTallies[i][0][batMap["so"]] / PA, 
+        "GB/PA": batterTallies[i][0][batMap["gb"]] / PA, 
+        "FB/PA": batterTallies[i][0][batMap["fb"]] / PA, 
+        "BB/PA": batterTallies[i][0][batMap["bb"]] / PA, 
+        "1B/PA": batterTallies[i][0][batMap["1b"]] / PA, 
+        "1B+/PA": batterTallies[i][0][batMap["1b+"]] / PA, 
+        "2B/PA": batterTallies[i][0][batMap["2b"]] / PA, 
+        "3B/PA": batterTallies[i][0][batMap["3b"]] / PA, 
+        "HR/PA": batterTallies[i][0][batMap["hr"]] / PA, 
+        "OBP": (batterTallies[i][0][batMap["bb"]] + batterTallies[i][0][batMap["1b"]] + batterTallies[i][0][batMap["1b+"]] + batterTallies[i][0][batMap["2b"]] + batterTallies[i][0][batMap["3b"]] + batterTallies[i][0][batMap["hr"]]) / PA
         });
       }
       //Pitchers
@@ -660,21 +619,20 @@ $(window).load(function() {
         // remember 1B+ and 3B are eaten up by 1B and 3B
         var PA = pitcherTallies[i][0].reduce(function(a, b) {return a + b;});
          // remember PU are eaten up by FB
-        r.push({"PU/PA": pitcherTallies[i][0][pit0Map["pu"]] / PA,
-        "SO/PA": pitcherTallies[i][0][pit0Map["so"]] / PA, 
-        "GB/PA": pitcherTallies[i][0][pit0Map["gb"]] / PA, 
-        "FB/PA": pitcherTallies[i][0][pit0Map["fb"]] / PA, 
-        "BB/PA": pitcherTallies[i][0][pit0Map["bb"]] / PA, 
-        "1B/PA": pitcherTallies[i][0][pit0Map["1b"]] / PA,
-        "2B/PA": pitcherTallies[i][0][pit0Map["2b"]] / PA, 
-        "HR/PA": pitcherTallies[i][0][pit0Map["hr"]] / PA, 
-        "OBP": (pitcherTallies[i][0][pit0Map["bb"]] + pitcherTallies[i][0][pit0Map["1b"]] + pitcherTallies[i][0][pit0Map["2b"]] + pitcherTallies[i][0][pit0Map["hr"]]) / PA
+        r.push({"PU/PA": pitcherTallies[i][0][pitMap["pu"]] / PA,
+        "SO/PA": pitcherTallies[i][0][pitMap["so"]] / PA, 
+        "GB/PA": pitcherTallies[i][0][pitMap["gb"]] / PA, 
+        "FB/PA": pitcherTallies[i][0][pitMap["fb"]] / PA, 
+        "BB/PA": pitcherTallies[i][0][pitMap["bb"]] / PA, 
+        "1B/PA": pitcherTallies[i][0][pitMap["1b"]] / PA,
+        "2B/PA": pitcherTallies[i][0][pitMap["2b"]] / PA, 
+        "HR/PA": pitcherTallies[i][0][pitMap["hr"]] / PA, 
+        "OBP": (pitcherTallies[i][0][pitMap["bb"]] + pitcherTallies[i][0][pitMap["1b"]] + pitcherTallies[i][0][pitMap["2b"]] + pitcherTallies[i][0][pitMap["hr"]]) / PA
         });
       }
       
       // Score
       r.push({"Score" : score});
-      
       return r;
     }
     
