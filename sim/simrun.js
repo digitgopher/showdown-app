@@ -1,114 +1,128 @@
 define([], function() {
-  // return {
-    // roll: function () {
-      // return 15;
-    // }
-  // };
-  /****************** THE ACTUAL SIMULATION CODE *********************/
+
+  // The needed definitions
   
+  var temp;
+  // Cannot put non-chart values in these mappings!
+  var batMapStrict = ["so", "gb", "fb", "bb", "1b", "1b+", "2b", "3b", "hr"];
+  var pitMapStrict = ["pu", "so", "gb", "fb", "bb", "1b", "2b", "hr"];
+  var batMap = {
+    0 : "so",
+    1 : "gb",
+    2 : "fb",
+    3 : "bb",
+    4 : "1b",
+    5 : "1b+",
+    6 : "2b",
+    7 : "3b",
+    8 : "hr",
+    // We have to track every result even though you can only get results on certain charts!
+    // Hence results are mapped to trackable values.
+    "so" : 0,
+    "gb" : 1,
+    "fb" : 2,
+    "bb" : 3,
+    "1b" : 4,
+    "1b+": 5,
+    "2b" : 6,
+    "3b" : 7,
+    "hr" : 8,
+    "pu" : 2 // batter sees a flyball
+  };
+  var pitMap= {
+    0 : "pu",
+    1 : "so",
+    2 : "gb",
+    3 : "fb",
+    4 : "bb",
+    5 : "1b",
+    6 : "2b",
+    7 : "hr",
+    // We have to track every result even though you can only get results on certain charts!
+    // Hence results are mapped to trackable values.
+    "pu" : 0,
+    "so" : 1,
+    "gb" : 2,
+    "fb" : 3,
+    "bb" : 4,
+    "1b" : 5,
+    "2b" : 6,
+    "hr" : 7,
+    "1b+": 5, // pitcher sees a normal single
+    "3b" : 6  // pitcher sees a double
+  };
+  
+  var sig = 100; // sig = statistically significant
+  var numGames = 162;
+  
+  
+  //var score = 0; // clear score
+  // A place to hold the raw results of the simulation
+  var batterTallies = [
+    [[0,0,0,0,0,0,0,0,0],[0,0/*How many steals*/,0/*Fielding representation*/]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]],
+    [[0,0,0,0,0,0,0,0,0],[0,0,0]]
+  ];
+  // Don't know what the group pitcherTallies[0][1] is for yet
+  var pitcherTallies = [
+    [[0,0,0,0,0,0,0,0],[0,0]]
+  ];
+  
+  var abres = ''; // current batter's result
+  
+  var outs = 0;
+  
+  var batters;
+  var pitchers;
+  var defense;
+  
+  
+  
+  
+  /****************** THE ACTUAL SIMULATION CODE *********************/
   //Requirements:
   //  Return the average statistics of the players passed in.
-  //    * passed exactly 9 batters and 1 pitcher. TODO: pass single batter, or multiple pitchers with IP
+  //    * passed exactly 9 batters (there is a single batter flag) and 1 pitcher.
   //    * return the average number of each result as a percentage of average number of plate appearances
   // The function simulates a large number of innings played, and does that many times to average the results. 
-  return function /*sim*/ (batters, pitchers, defense){
-
-    // Usage
-    // Get first batter: batters[0]
-    // Get first batter's chart: batters[0][0]
-    // Get first batter's other attributes: batters[0][1]
-    // Note: batter's card attributes are split like this so we can loop through atbat result possibilities
-    // Example: batters[curBatter][1][0] == onbase value
-    // Using arrays because objects aren't ordered!
-    // Example of how data should be formatted:
-    // var batters = [
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"c",6]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"1b",0]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"2b",3]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"ss",3]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"3b",1]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"of",1]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"of",1]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"of",1]],
-      // [[2,2,2,3,5,1,2,1,2],[8,15,"dh",""]]
-    // ]
-    // console.log(batters);
-    // console.log(pitchers);
-    
+  function run(b, p, d){
+    // Set so other methods can access
+    batters = b;
+    pitchers = p;
+    defense = d;
+    temp = new Array();
     var useDefense = false;
+    var curBatter = 0; // set first batter
+    var curBatterSpeed;
+    
     if(defense.length > 1){
       useDefense = true;
       var catcher = defense[0];
       var infield = defense[1];
       var outfield = defense[2];
     }
-    var temp = new Array();
     
-    // Cannot put non-chart values in these mappings!
-    var batMapStrict = ["so","gb","fb","bb","1b","1b+","2b","3b","hr"];
-    var pitMapStrict = ["pu","so","gb","fb","bb","1b","2b","hr"];
-    
-    var batMap = {
-      0 : "so",
-      1 : "gb",
-      2 : "fb",
-      3 : "bb",
-      4 : "1b",
-      5 : "1b+",
-      6 : "2b",
-      7 : "3b",
-      8 : "hr",
-      // We have to track every result even though you can only get results on certain charts!
-      // Hence results are mapped to trackable values.
-      "so" : 0,
-      "gb" : 1,
-      "fb" : 2,
-      "bb" : 3,
-      "1b" : 4,
-      "1b+": 5,
-      "2b" : 6,
-      "3b" : 7,
-      "hr" : 8,
-      "pu" : 2 // batter sees a flyball
+    // Convert the player values to numbers as they come in as strings
+    for (var i = 0; i < batters.length; i++) {
+      for (var j in batters[i]) {
+        if(j != "name"){
+          batters[i][j] = Number(batters[i][j]);
+        }
+      }
     }
-    // Example pitchers data:
-    // var pitchers = [
-      // [[2,5,5,4,2,1,1,0],[4,""]]
-    // ]
-    var pitMap= {
-      0 : "pu",
-      1 : "so",
-      2 : "gb",
-      3 : "fb",
-      4 : "bb",
-      5 : "1b",
-      6 : "2b",
-      7 : "hr",
-      // We have to track every result even though you can only get results on certain charts!
-      // Hence results are mapped to trackable values.
-      "pu" : 0,
-      "so" : 1,
-      "gb" : 2,
-      "fb" : 3,
-      "bb" : 4,
-      "1b" : 5,
-      "2b" : 6,
-      "hr" : 7,
-      "1b+": 5, // pitcher sees a normal single
-      "3b" : 6  // pitcher sees a double
+    for (var i = 0; i < pitchers.length; i++) {
+      for (var j in pitchers[i]) {
+        if(j != "name"){
+          pitchers[i][j] = Number(pitchers[i][j]);
+        }
+      }
     }
-
-    // var inningMap = {
-      // 1 : "1st",
-      // 2 : "2nd",
-      // 3 : "3rd",
-      // 4 : "4th",
-      // 5 : "5th",
-      // 6 : "6th",
-      // 7 : "7th",
-      // 8 : "8th",
-      // 9 : "9th"
-    // }
     
     // // check that all charts add up to 20
     // for (var i = 0; i < batters.length; i++) {
@@ -121,16 +135,11 @@ define([], function() {
 
     // to contain results of each simulation to be averaged together
     
-    // Run the simulation 30 times and then get averages.
-    // TODO: Let user input this to tradeoff accuracy for speed
-    // 10000 is a good speed/accuracy ratio
-    var sig = 30; // sig = statistically significant
     for (var a = 0; a < sig; a++){
-      // Prepare everything for a simulation
-      var bases = [-1,-1,-1]; // Nobody is on base to start with!
-      var score = 0; // clear score
-      // A place to hold the raw results of the simulation
-      var batterTallies = [
+      // Reset everything for next round of simulation
+      var bases = [0,-1,-1,-1]; // Nobody is on base to start with! Bases[0] holds score.
+      //score = 0;
+      batterTallies = [
         [[0,0,0,0,0,0,0,0,0],[0,0/*How many steals*/,0/*Fielding representation*/]],
         [[0,0,0,0,0,0,0,0,0],[0,0,0]],
         [[0,0,0,0,0,0,0,0,0],[0,0,0]],
@@ -140,22 +149,19 @@ define([], function() {
         [[0,0,0,0,0,0,0,0,0],[0,0,0]],
         [[0,0,0,0,0,0,0,0,0],[0,0,0]],
         [[0,0,0,0,0,0,0,0,0],[0,0,0]]
-      ]
-      // Don't know what the group pitcherTallies[0][1] is for yet
-      var pitcherTallies = [
+      ];
+      pitcherTallies = [
         [[0,0,0,0,0,0,0,0],[0,0]]
-      ]
-      var curBatter = 0; // set first batter
-      var abres = ''; // current batter's result
-      
+      ];
+      curBatter = 0;
+      abres = '';
       
       // We can play as many innings as we want, in multiples of 9 to keep things even.
-      var numGames = 162;
       for (var i = 1; i <= 9*numGames; i++) {
-        var outs = 0;
+        outs = 0;
         // end inning after 3 outs
         while(outs < 3){
-          abres = getResultAtBat();
+          abres = getResultAtBat(curBatter);
           //console.log(abres);
           // Out result
           if(abres == "pu" || abres == "so" || abres == "gb" || abres == "fb"){
@@ -163,10 +169,11 @@ define([], function() {
           }
           // Not an out result
           else{
-            advanceRunners(useDefense);
+            curBatterSpeed = batters[curBatter]["sp"];
+            bases = advanceRunners(useDefense, curBatterSpeed, bases);
           }
           // Save statistics for display
-          logResult();
+          logResult(curBatter);
           // Next batter
           curBatter = (curBatter + 1) % 9;
           if(outs < 3){
@@ -178,14 +185,17 @@ define([], function() {
           //return;
         }
         // Inning over. Clear the bases
-        bases = [-1,-1,-1];
+        //bases = [-1,-1,-1];
+        bases[1] = -1;
+        bases[2] = -1;
+        bases[3] = -1;
       }
       // Games over
-      score /= numGames;
+      bases[0] /= numGames;
       //console.log(pitcherTallies);
       //console.log(batterTallies);
       // Transform what logResult does into the statistics that will be output
-      temp.push(transformRawResultsToStatistics());
+      temp.push(transformRawResultsToStatistics(bases));
       //return;
       //console.log("Simulation results: ");
     
@@ -199,16 +209,11 @@ define([], function() {
       return val.toFixed ? Number(val).toFixed(4).replace(/^0+/, '') : val;
     });
     // End simulation logic
+  }
+
     
     
-    
-    
-    
-    
-    //*********************
-    // Functions below
-    
-    function getResultAtBat(){
+    function getResultAtBat(curBatter){
       // console.log("**********");
       // console.log(curBatter);
       // console.log(batters[curBatter][1]);
@@ -216,15 +221,15 @@ define([], function() {
       // Which chart?
       var pitch = roll();
       if(pitch + Number(pitchers[0]['c']) > Number(batters[curBatter]['ob'])){ // pitcher has advantage!
-        return getSwingResult("p");
+        return getSwingResult("p", curBatter);
       }
       else{ // batter has advantage!
-        return getSwingResult("b");
+        return getSwingResult("b", curBatter);
       }
       
     }
     
-    function getSwingResult(chart){
+    function getSwingResult(chart, curBatter){
       var swing = roll();
       //console.log(swing);
       var inc = 0;
@@ -253,97 +258,91 @@ define([], function() {
     }
 
     // Also keeps the score
-    function advanceRunners(useDefense){
+    function advanceRunners(useDefense, curBatterSpeed, bases){
       switch(abres){
         case "gb":
-          result_gb();
+          return result_gb(useDefense, curBatterSpeed, bases);
           break;
         case "fb":
-          result_fb();
+          return result_fb(useDefense, curBatterSpeed, bases);
           break;
         case "bb":
-          result_bb();
+          return result_bb(useDefense, curBatterSpeed, bases);
           break;
         case "1b":
-          result_1b();
+          return result_1b(useDefense, curBatterSpeed, bases);
           break;
         case "1b+":
-          result_1bplus();
+          return result_1bplus(useDefense, curBatterSpeed, bases);
           break;
         case "2b":
-          result_2b();
+          return result_2b(useDefense, curBatterSpeed, bases);
           break;
         case "3b":
-          result_3b();
+          return result_3b(useDefense, curBatterSpeed, bases);
           break;
         case "hr":
-          result_hr();
+          return result_hr(useDefense, curBatterSpeed, bases);
           break;
         default:
-          console.log("Error: Can't advance runners because hittype not valid.");
+          console.error("Error: Can't advance runners because hittype not valid.");
       }
     }
     
-    function result_gb(){
-      
+    function result_gb(useDefense, curBatterSpeed, bases){
+      return bases;
     }
-    function result_fb(){
-      
+    function result_fb(useDefense, curBatterSpeed, bases){
+      return bases;
     }
     
     // Move runners after a walk
-    function result_bb(){
+    function result_bb(useDefense, curBatterSpeed, bases){
       // No difference if using defense
-      bases[0] ? // check if runner on first
-            bases[1] ? // check if runner on second
-              bases[2] ? // check if runner on third
-                score++ // bases loaded, one runner scores!
-              : bases[2] = bases[1] // nobody on third, move the runner from second to third
-            : bases[1] = bases[0] // nobody on second, move the runner on first to second
-          : bases[0] = curBatter; // nobody was on first to begin with
-      // if(bases[0] != -1){
-        // if(bases[1] != -1){
-          // if(bases[2] != -1){
-            // // runners on every base...
-            // score++;
-            // bases[2] = bases[1];
-            // bases[1] = bases[0];
-            // bases[0] = curBatter;
-          // }
-          // else{
-            // // runners on first and second, not third...
-            // bases[2] = bases[1];
-            // bases[1] = bases[0];
-            // bases[0] = curBatter;
-          // }
-        // }
-        // else{
-          // // runner on first, not second...
-          // bases[1] = bases[0];
-          // bases[0] = curBatter;
-        // }
-      // }
-      // else{
-        // // nobody on first...
-        // bases[0] = curBatter;
-      // }
+      if(bases[1] != -1){
+        if(bases[2] != -1){
+          if(bases[3] != -1){
+            // runners on every base...
+            bases[0]++;
+            bases[3] = bases[2];
+            bases[2] = bases[1];
+            bases[1] = curBatterSpeed;
+          }
+          else{
+            // runners on first and second, not third...
+            bases[3] = bases[2];
+            bases[2] = bases[1];
+            bases[1] = curBatterSpeed;
+          }
+        }
+        else{
+          // runner on first, not second...
+          bases[2] = bases[1];
+          bases[1] = curBatterSpeed;
+        }
+      }
+      else{
+        // nobody on first...
+        bases[1] = curBatterSpeed;
+      }
+      return bases;
     }
     
     // Move runners after a single
-    function result_1b(){
+    function result_1b(useDefense, curBatterSpeed, bases){
       if(!useDefense){
-        if(bases[2] != -1){ // runner on third scores
-          score++;
+        if(bases[3] != -1){ // runner on third scores
+          bases[0]++;
+          bases[3] = -1;
+        }
+        if(bases[2] != -1){ // runner on second goes to third
+          bases[3] = bases[2];
           bases[2] = -1;
         }
-        if(bases[1] != -1){ // runner on second goes to third
+        if(bases[1] != -1){ // runner on first goes to second
           bases[2] = bases[1];
-          bases[1] = -1;
         }
-        if(bases[0] != -1){ // runner on first goes to second
-          bases[1] = bases[0];
-        }
-        bases[0] = curBatter; // and batter occupies first
+        bases[1] = curBatterSpeed; // and batter occupies first
       }
       // else{ // Use defense
         // if(bases[2] != -1){ // runner on third scores
@@ -367,24 +366,25 @@ define([], function() {
         // }
         // bases[0] = curBatter; // and batter occupies first
       // }
+      return bases;
     }
     
     // Move runners on a single plus
-    function result_1bplus(){
+    function result_1bplus(useDefense, curBatterSpeed, bases){
       if(!useDefense){
-        if(bases[2] != -1){ // runner on third scores
-          score++;
+        if(bases[3] != -1){ // runner on third scores
+          bases[0]++;
+          bases[3] = -1;
+        }
+        if(bases[2] != -1){ // runner on second goes to third
+          bases[3] = bases[2];
           bases[2] = -1;
         }
-        if(bases[1] != -1){ // runner on second goes to third
+        if(bases[1] != -1){ // runner on first goes to second, batter goes to first
           bases[2] = bases[1];
-          bases[1] = -1;
-        }
-        if(bases[0] != -1){ // runner on first goes to second, batter goes to first
-          bases[1] = bases[0];
-          bases[0] = curBatter;
+          bases[1] = curBatterSpeed;
         }else{ // no runner on first: batter takes second
-          bases[1] = curBatter;
+          bases[2] = curBatterSpeed;
         }
       }
       // else{ // Use defense
@@ -411,24 +411,25 @@ define([], function() {
           // bases[1] = curBatter;
         // }
       // }
+      return bases;
     }
     
     // Move runners from a double
-    function result_2b(){
+    function result_2b(useDefense, curBatterSpeed, bases){
       if(!useDefense){
-        if(bases[2] != -1){ // runner on third scores
-          score++;
+        if(bases[3] != -1){ // runner on third scores
+          bases[0]++;
+          bases[3] = -1;
+        }
+        if(bases[2] != -1){ // runner on second scores
+          bases[0]++;
           bases[2] = -1;
         }
-        if(bases[1] != -1){ // runner on second scores
-          score++;
+        if(bases[1] != -1){ // runner goes first to third
+          bases[3] = bases[1];
           bases[1] = -1;
         }
-        if(bases[0] != -1){ // runner goes first to third
-          bases[2] = bases[0];
-          bases[0] = -1;
-        }
-        bases[1] = curBatter; // batter stands on second
+        bases[2] = curBatterSpeed; // batter stands on second
       }
       // else{ // Use defense
         // if(bases[2] != -1){ // runner on third scores
@@ -453,41 +454,44 @@ define([], function() {
         // }
         // bases[1] = curBatter; // batter stands on second
       // }
+      return bases;
     }
     
     // Move runners on triple
-    function result_3b(){
+    function result_3b(useDefense, curBatterSpeed, bases){
       // No difference with defence
-      if(bases[0] != -1){ // everybody scores!
-        score++;
-        bases[0] = -1;
-      }
-      if(bases[1] != -1){
-        score++;
+      if(bases[1] != -1){ // everybody scores!
+        bases[0]++;
         bases[1] = -1;
       }
       if(bases[2] != -1){
-        score++;
+        bases[0]++;
         bases[2] = -1;
       }
-      bases[2] = curBatter; // and the batter stands on third
+      if(bases[3] != -1){
+        bases[0]++;
+        bases[3] = -1;
+      }
+      bases[3] = curBatterSpeed; // and the batter stands on third
+      return bases;
     }
     
     // Move runners on a hr
-    function result_hr(){
-      if(bases[0] != -1){ // everybody scores!
-        score++;
-        bases[0] = -1;
-      }
-      if(bases[1] != -1){
-        score++;
+    function result_hr(useDefense, curBatterSpeed, bases){
+      if(bases[1] != -1){ // everybody scores!
+        bases[0]++;
         bases[1] = -1;
       }
       if(bases[2] != -1){
-        score++;
+        bases[0]++;
         bases[2] = -1;
       }
-      score++;
+      if(bases[3] != -1){
+        bases[0]++;
+        bases[3] = -1;
+      }
+      bases[0]++;
+      return bases;
     }
 
     // Ubiquitous!
@@ -495,7 +499,7 @@ define([], function() {
       return Math.ceil(Math.random() * 20);
     }
 
-    function logResult(){
+    function logResult(curBatter){
       //console.log(abres);
       pitcherTallies[0][0][pitMap[abres]]++;
       batterTallies[curBatter][0][batMap[abres]]++;
@@ -504,7 +508,7 @@ define([], function() {
     // build 'results'
     // results has 11 items:
     // The first 9 are batters, then pitcher, then score
-    function transformRawResultsToStatistics(){
+    function transformRawResultsToStatistics(bases){
       var r = new Array();
       // Access a specific raw value with batterTallies[batterIndex][0][resultOfAtbat]
       // Compute each (resultOfAtbat/Plate Appearances), as well as OBP
@@ -543,7 +547,7 @@ define([], function() {
       }
       
       // Score
-      r.push({"Score" : score});
+      r.push({"Score" : bases[0]});
       return r;
     }
     
@@ -609,5 +613,16 @@ define([], function() {
       return r;
     }
     
-  }
+  return {
+    run:run,
+    roll:roll,
+    result_gb: result_gb,
+    result_fb: result_fb,
+    result_bb: result_bb,
+    result_1b: result_1b,
+    result_1bplus: result_1bplus,
+    result_2b: result_2b,
+    result_3b: result_3b,
+    result_hr: result_hr
+  };
 });

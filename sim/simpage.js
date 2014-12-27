@@ -1,5 +1,5 @@
 //$(window).load(function() {
-define(["jquery","sim/simrun"], function($, run) {
+define(["jquery","sim/simrun"], function($, simulation) {
 
 /********* ALL THE FORM VALIDATING ***********/
   // Pass the classname of a set of chart selects, and it will ensure that they add to 20
@@ -146,7 +146,8 @@ define(["jquery","sim/simrun"], function($, run) {
     // Now we have all the input data, print stuff out to confirm:
     
     // Run the simulation and get results
-    var results = $.parseJSON(run(batters, pitchers, defenseProcessed));
+    var runInstance = simulation.run(batters, pitchers, defenseProcessed);
+    var results = $.parseJSON(runInstance);
     var score = results.pop();
     var presult = results.pop();
     // console.log(results);
