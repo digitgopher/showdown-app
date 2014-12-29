@@ -1,7 +1,7 @@
 define([
   'intern!object',
   'intern/chai!assert',
-  'sim/simrun'
+  'sim/sim'
 ], function (registerSuite, assert, sim) {
     registerSuite({
       name: 'sim',
