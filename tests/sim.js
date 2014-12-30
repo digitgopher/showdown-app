@@ -7,12 +7,42 @@ define([
       name: 'sim',
 
       roll: function () {
-        var x = 0;
-        for (var i = 0; i < 100; i++) {
-          x = sim.roll();
-          assert(x <= 20, 'Roll is less than or equal to 20.');
-          assert(x >= 1, 'Roll is less than or equal to 20.');
+        var x = [];
+        var trials = 10000;
+        for (var i = 0; i < trials; i++) {
+          x.push(sim.roll());
+          // Check that every roll is valid
+          assert(x[i] <= 20, 'Roll is less than or equal to 20.');
+          assert(x[i] >= 1, 'Roll is less than or equal to 20.');
         }
+        var counts = {};
+        for(var i = 0; i < x.length; i++) {
+          var num = x[i];
+          counts[num] = counts[num] ? counts[num]+1 : 1;
+        }
+        for(var i = 1; i <= counts.length; i++) {
+          // Make sure that every valid number was produced
+          assert(counts[i] > trials * .02, 'At least some rolls of '+ i +' should exist');
+        }
+        
+        // Expect a uniform distribution: use Pearson's chi-square test for a distribution fit.
+        var expected = trials / 20;
+        var chiSquare = 0;
+        for (var i = 1; i <= 20; i++) {
+          chiSquare += (counts[i] - expected) * (counts[i] - expected) / expected;
+        }
+        // Chi-square statistics: p-value = 0.05, df = 19, limit = 30.144
+        assert(chiSquare < 30.144, 'Chi-square test for roll uniform distribution failed at p-value = .05');
+        // Chi-square statistics: p-value = 0.01, df = 19, limit = 36.191
+        assert(chiSquare < 36.191, 'Chi-square test for roll uniform distribution failed at p-value = .01');
+      },
+      
+      defenseThrow: function(){
+        // defenseThrow(totalDefenseValue, totalSpeedValue), returns true when runner is thrown out
+        assert.isTrue(sim.defenseThrow(8, 9), "Fielding check 1");
+        assert.isTrue(sim.defenseThrow(8, 7), "Fielding check 2");
+        assert.isFalse(sim.defenseThrow(2, 23), "Fielding check 3");
+        assert.isFalse(sim.defenseThrow(3, 23), "Fielding check 4");
       },
       
       result_bb: function () {
@@ -106,12 +136,21 @@ define([
         assert.strictEqual(r[3], -1, 'dSingle with runner on first, third');
         assert.strictEqual(r[4], 0, 'dSingle with runner on first, outs');
         
-        r = sim.result_1b([5,5,5], 18, [5,15,10,22,0]);
-        assert.strictEqual(r[0], 6, 'dSingle with bases loaded; score');
-        assert.strictEqual(r[1], 18, 'dSingle with bases loaded; first');
-        assert.strictEqual(r[2], 15, 'dSingle with bases loaded; second');
-        assert.strictEqual(r[3], 10, 'dSingle with bases loaded; third');
-        assert.strictEqual(r[4], 0, 'dSingle with bases loaded; outs');
+        for (var i = 0; i < 100; i++) {
+          r = sim.result_1b([5,5,5], 18, [5,15,10,22,0]);
+          assert.strictEqual(r[1], 18, 'Using defense; Single with runners on second and third; always same runner on first');
+          assert.strictEqual(r[2], 15, 'Using defense; Single with runners on second and third; second always contains runner from first');
+          assert.strictEqual(r[3], -1, 'Using defense; Single with runners on second and third; third always empty');
+          if(r[0] === 6){
+            assert.strictEqual(r[4], 1, 'Using defense; Single with runners on second and third; if one run scores than than one runner was thrown out at the plate');
+          }
+          else if(r[0] === 7){
+            assert.strictEqual(r[4], 0, 'Using defense; Single with runners on second and third; if 2 runs score then no outs made');
+          }
+          else {
+            assert.ok(false, 'Using defense; Single with runners on second and third; score should be one of two strict values')
+          }
+        }
       },
       
       result_1bplus: function () {

@@ -346,17 +346,18 @@ define([], function() {
           status[0]++;
           status[3] = -1;
         }
-        if(status[2] != -1){ // runner on second goes to third, then tries for home
+        if(status[2] != -1){ // runner on second goes to third...
           status[3] = status[2];
           status[2] = -1;
-          if(roll() + defense[2] > status[3] + 5){
-            status[3] = -1;
+          // ...then tries for home
+          if(defenseThrow(defense[2], status[3] + 5)){
             status[4]++;
           }
           else{
-            status[3] = -1;
             status[0]++;
           }
+          // Either way, runner no longer on third
+          status[3] = -1;
         }
         if(status[1] != -1){ // runner on first goes to second
           status[2] = status[1];
@@ -367,6 +368,7 @@ define([], function() {
     }
     
     // Move runners on a single plus
+    
     function result_1bplus(defense, curBatterSpeed, status){
       if(defense.length != 3){
         if(status[3] != -1){ // runner on third scores
@@ -384,30 +386,31 @@ define([], function() {
           status[2] = curBatterSpeed;
         }
       }
-      // else{ // Use defense
-        // if(status[2] != -1){ // runner on third scores
-          // score++;
-          // status[2] = -1;
-        // }
-        // if(status[1] != -1){ // runner on second goes to third, then tries for home
-          // status[2] = status[1];
-          // status[1] = -1;
-          // if(roll() + outfield > batters[status[2]]["sp"] + 5){
-            // status[2] = -1;
-            // outs++;
-          // }
-          // else{
-            // status[2] = -1;
-            // score++;
-          // }
-        // }
-        // if(status[0] != -1){ // runner on first goes to second, batter goes to first
-          // status[1] = status[0];
-          // status[0] = curBatter;
-        // }else{ // no runner on first: batter takes second
-          // status[1] = curBatter;
-        // }
-      // }
+      else{ // Use defense
+        if(status[3] != -1){ // runner on third scores
+          status[0]++;
+          status[3] = -1;
+        }
+        if(status[2] != -1){ // runner on second goes to third...
+          status[3] = status[2];
+          status[2] = -1;
+          // ...then tries for home
+          if(defenseThrow(defense[2], status[3] + 5)){
+            status[4]++;
+          }
+          else{
+            status[0]++;
+          }
+          // Either way, runner no longer on third
+          status[3] = -1;
+        }
+        if(status[1] != -1){ // runner on first goes to second, batter goes to first
+          status[2] = status[1];
+          status[1] = curBatterSpeed;
+        }else{ // no runner on first: batter takes second
+          status[2] = curBatterSpeed;
+        }
+      }
       return status;
     }
     
@@ -497,15 +500,10 @@ define([], function() {
     }
     
     // Where the defense action is at!
-    function fieldingCheck(){
-      if(roll() + defense[2] > status[3] + 5){
-            status[3] = -1;
-            status[4]++;
-          }
-          else{
-            status[3] = -1;
-            status[0]++;
-          }
+    // true = runner thrown out
+    // false = runner safe
+    function defenseThrow(totalDefenseValue, totalSpeedValue){
+      return roll() + totalDefenseValue > totalSpeedValue ? true : false;
     }
 
     function logResult(curBatter){
@@ -625,6 +623,7 @@ define([], function() {
   return {
     run:run,
     roll:roll,
+    defenseThrow:defenseThrow,
     result_gb: result_gb,
     result_fb: result_fb,
     result_bb: result_bb,
