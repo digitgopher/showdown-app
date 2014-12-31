@@ -159,28 +159,21 @@ define([], function() {
         status[4] = 0;
         // end inning after 3 outs
         while(status[4] < 3){
+          // Get batter's result
           abres = getResultAtBat(curBatter);
-          //console.log(abres);
-          // Out result
-          if(abres == "pu" || abres == "so" || abres == "gb" || abres == "fb"){
-            status[4]++;
-          }
-          // Not an out result
-          else{
-            curBatterSpeed = batters[curBatter]["sp"];
-            status = advanceRunners(defense, curBatterSpeed, status);
-          }
+          // Activate what happens on that result
+          curBatterSpeed = batters[curBatter]["sp"];
+          status = advanceRunners(defense, curBatterSpeed, status);
           // Save statistics for display
           logResult(curBatter);
           // Next batter
           curBatter = (curBatter + 1) % 9;
-          if(status[4] < 3){
-            //console.log("Batter "+ curBatter + " up. Inning " + i + ": " + outs + " outs.");
-          }
-          else{
-            //console.log("Inning over. Moving to the "+ (i+1));
-          }
-          //return;
+          // if(status[4] < 3){
+            // console.log("Batter "+ curBatter + " up. Inning " + i + ": " + outs + " outs.");
+          // }
+          // else{
+            // console.log("Inning over. Moving to the "+ (i+1));
+          // }
         }
         // Inning over. Clear the basses
         status[1] = -1;
@@ -257,6 +250,12 @@ define([], function() {
     // Also keeps the score
     function advanceRunners(defense, curBatterSpeed, status){
       switch(abres){
+        case "pu":
+          return result_pu(defense, curBatterSpeed, status);
+          break;
+        case "so":
+          return result_so(defense, curBatterSpeed, status);
+          break;
         case "gb":
           return result_gb(defense, curBatterSpeed, status);
           break;
@@ -286,10 +285,39 @@ define([], function() {
       }
     }
     
-    function result_gb(defense, curBatterSpeed, status){
+    // Move runners on a popup
+    function result_pu(defense, curBatterSpeed, status){
+      // Nobody ever advances on a popup
+      status[4]++; // batter out
       return status;
     }
+    
+    // Move runners on a strikeout
+    function result_so(defense, curBatterSpeed, status){
+      // Nobody ever advances on a strikeout
+      status[4]++; // batter out
+      return status;
+    }
+    
+    // Move runners on a ground ball
+    function result_gb(defense, curBatterSpeed, status){
+      if(defense.length != 3){
+        // Nobody advances!
+      }
+      else{
+        
+      }
+      return status;
+    }
+    
+    // Move runners on a fly ball
     function result_fb(defense, curBatterSpeed, status){
+      if(defense.length != 3){
+        // Nobody advances!
+      }
+      else{
+        
+      }
       return status;
     }
     
@@ -351,10 +379,10 @@ define([], function() {
           status[2] = -1;
           // ...then tries for home
           if(defenseThrow(defense[2], status[3] + 5)){
-            status[4]++;
+            status[4]++; // thrown out
           }
           else{
-            status[0]++;
+            status[0]++; // scores
           }
           // Either way, runner no longer on third
           status[3] = -1;
@@ -396,10 +424,10 @@ define([], function() {
           status[2] = -1;
           // ...then tries for home
           if(defenseThrow(defense[2], status[3] + 5)){
-            status[4]++;
+            status[4]++; // thrown out
           }
           else{
-            status[0]++;
+            status[0]++; // scores
           }
           // Either way, runner no longer on third
           status[3] = -1;
@@ -431,35 +459,36 @@ define([], function() {
         }
         status[2] = curBatterSpeed; // batter stands on second
       }
-      // else{ // Use defense
-        // if(status[2] != -1){ // runner on third scores
-          // score++;
-          // status[2] = -1;
-        // }
-        // if(status[1] != -1){ // runner on second scores
-          // score++;
-          // status[1] = -1;
-        // }
-        // if(status[0] != -1){ // runner goes first to third, and tries to score
-          // status[2] = status[0];
-          // status[0] = -1;
-          // if(roll() + outfield > batters[status[2]]["sp"] + 5){
-            // status[2] = -1;
-            // outs++;
-          // }
-          // else{
-            // status[2] = -1;
-            // score++;
-          // }
-        // }
-        // status[1] = curBatter; // batter stands on second
-      // }
+      else { // use defense
+        if(status[3] != -1){ // runner on third scores
+          status[0]++;
+          status[3] = -1;
+        }
+        if(status[2] != -1){ // runner on second scores
+          status[0]++;
+          status[2] = -1;
+        }
+        if(status[1] != -1){ // runner goes first to third
+          status[3] = status[1];
+          status[1] = -1;
+          // ...then tries for home
+          if(defenseThrow(defense[2], status[3] + 5)){
+            status[4]++; // thrown out
+          }
+          else{
+            status[0]++; // scores
+          }
+          // Either way, runner no longer on third
+          status[3] = -1;
+        }
+        status[2] = curBatterSpeed; // batter stands on second
+      }
       return status;
     }
     
     // Move runners on triple
     function result_3b(defense, curBatterSpeed, status){
-      // No difference with defence
+      // No difference with defense
       if(status[1] != -1){ // everybody scores!
         status[0]++;
         status[1] = -1;
@@ -478,6 +507,7 @@ define([], function() {
     
     // Move runners on a hr
     function result_hr(defense, curBatterSpeed, status){
+      // No difference with defense
       if(status[1] != -1){ // everybody scores!
         status[0]++;
         status[1] = -1;
@@ -624,6 +654,9 @@ define([], function() {
     run:run,
     roll:roll,
     defenseThrow:defenseThrow,
+    
+    result_pu: result_pu,
+    result_so: result_so,
     result_gb: result_gb,
     result_fb: result_fb,
     result_bb: result_bb,
@@ -632,5 +665,6 @@ define([], function() {
     result_2b: result_2b,
     result_3b: result_3b,
     result_hr: result_hr
+    
   };
 });

@@ -39,10 +39,106 @@ define([
       
       defenseThrow: function(){
         // defenseThrow(totalDefenseValue, totalSpeedValue), returns true when runner is thrown out
-        assert.isTrue(sim.defenseThrow(8, 9), "Fielding check 1");
-        assert.isTrue(sim.defenseThrow(8, 7), "Fielding check 2");
-        assert.isFalse(sim.defenseThrow(2, 23), "Fielding check 3");
-        assert.isFalse(sim.defenseThrow(3, 23), "Fielding check 4");
+        for (var i = 0; i < 100; i++) {
+          // These should all happen every time!
+          assert.isTrue(sim.defenseThrow(9, 9), "Fielding check 1");
+          assert.isTrue(sim.defenseThrow(8, 7), "Fielding check 2");
+          assert.isFalse(sim.defenseThrow(2, 23), "Fielding check 3");
+          assert.isFalse(sim.defenseThrow(3, 23), "Fielding check 4");
+        }
+      },
+      
+      result_pu: function () {
+        var r;
+        r = sim.result_pu(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'No Defense; Pop-up with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'No Defense; Pop-up with bases empty, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Pop-up with bases empty, second empty');
+        assert.strictEqual(r[3], -1, 'No Defense; Pop-up with bases empty, third empty');
+        assert.strictEqual(r[4], 1, 'No Defense; Pop-up with bases empty, outs +1');
+        
+        r = sim.result_pu(0, 18, [5,15,10,22,0])
+        assert.strictEqual(r[0], 5, 'No Defense; Pop-up with bases full, score same');
+        assert.strictEqual(r[1], 15, 'No Defense; Pop-up with bases full, first holds');
+        assert.strictEqual(r[2], 10, 'No Defense; Pop-up with bases full, second holds');
+        assert.strictEqual(r[3], 22, 'No Defense; Pop-up with bases full, third holds');
+        assert.strictEqual(r[4], 1, 'No Defense; Pop-up with bases full, outs +1');
+        
+        r = sim.result_pu([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'Using Defense; Pop-up with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Pop-up with bases empty, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Pop-up with bases empty, second empty');
+        assert.strictEqual(r[3], -1, 'Using Defense; Pop-up with bases empty, third empty');
+        assert.strictEqual(r[4], 1, 'Using Defense; Pop-up with bases empty, outs +1');
+        
+        r = sim.result_pu([5,5,5], 18, [5,15,10,22,0])
+        assert.strictEqual(r[0], 5, 'Using Defense; Pop-up with bases full, score same');
+        assert.strictEqual(r[1], 15, 'Using Defense; Pop-up with bases full, first holds');
+        assert.strictEqual(r[2], 10, 'Using Defense; Pop-up with bases full, second holds');
+        assert.strictEqual(r[3], 22, 'Using Defense; Pop-up with bases full, third holds');
+        assert.strictEqual(r[4], 1, 'Using Defense; Pop-up with bases full, outs +1');
+      },
+      
+      result_so: function () {
+        var r;
+        r = sim.result_so(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'No Defense; Strikeout with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'No Defense; Strikeout with bases empty, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Strikeout with bases empty, second empty');
+        assert.strictEqual(r[3], -1, 'No Defense; Strikeout with bases empty, third empty');
+        assert.strictEqual(r[4], 1, 'No Defense; Strikeout with bases empty, outs +1');
+        
+        r = sim.result_so(0, 18, [5,15,10,22,0])
+        assert.strictEqual(r[0], 5, 'No Defense; Strikeout with bases full, score same');
+        assert.strictEqual(r[1], 15, 'No Defense; Strikeout with bases full, first holds');
+        assert.strictEqual(r[2], 10, 'No Defense; Strikeout with bases full, second holds');
+        assert.strictEqual(r[3], 22, 'No Defense; Strikeout with bases full, third holds');
+        assert.strictEqual(r[4], 1, 'No Defense; Strikeout with bases full, outs +1');
+        
+        r = sim.result_so([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'Using Defense; Strikeout with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Strikeout with bases empty, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Strikeout with bases empty, second empty');
+        assert.strictEqual(r[3], -1, 'Using Defense; Strikeout with bases empty, third empty');
+        assert.strictEqual(r[4], 1, 'Using Defense; Strikeout with bases empty, outs +1');
+        
+        r = sim.result_so([5,5,5], 18, [5,15,10,22,0])
+        assert.strictEqual(r[0], 5, 'Using Defense; Strikeout with bases full, score same');
+        assert.strictEqual(r[1], 15, 'Using Defense; Strikeout with bases full, first holds');
+        assert.strictEqual(r[2], 10, 'Using Defense; Strikeout with bases full, second holds');
+        assert.strictEqual(r[3], 22, 'Using Defense; Strikeout with bases full, third holds');
+        assert.strictEqual(r[4], 1, 'Using Defense; Strikeout with bases full, outs +1');
+      },
+      
+      result_gb: function () {
+        var r;
+        r = sim.result_gb(0, 15, [0,-1,-1,-1,0]);
+        // 8 combinations of baserunners, 3 possibilities for number of outs (24 configurations)
+        
+        // Two outs (8 out of 24)
+        // No runners on base, 0 or 1 outs
+        // Runner on first only, 0 or 1 outs
+        // Runner on second only, 0 or 1 outs
+        // Runner on third only, 0 or 1 outs
+        // Runner on first and second, 0 or 1 outs
+        // Runner on first and third, 0 or 1 outs
+        // Runner on second and third, 0 or 1 outs
+        // Bases loaded, 0 or 1 outs
+      },
+      
+      result_fb: function () {
+        var r;
+        r = sim.result_fb(0, 15, [0,-1,-1,-1,0]);
+        // 8 combinations of baserunners, 3 possibilities for number of outs (24 configurations)
+        
+        // Two outs (8 out of 24)
+        // No runners on base or runner on first only, 0 or 1 out (4 out of 24)
+        // Runner on second only, 0 or 1 outs
+        // Runner on third only, 0 or 1 outs
+        // Runner on first and second, 0 or 1 outs
+        // Runner on first and third, 0 or 1 outs
+        // Runner on second and third, 0 or 1 outs
+        // Bases loaded, 0 or 1 outs
       },
       
       result_bb: function () {
@@ -138,107 +234,292 @@ define([
         
         for (var i = 0; i < 100; i++) {
           r = sim.result_1b([5,5,5], 18, [5,15,10,22,0]);
-          assert.strictEqual(r[1], 18, 'Using defense; Single with runners on second and third; always same runner on first');
-          assert.strictEqual(r[2], 15, 'Using defense; Single with runners on second and third; second always contains runner from first');
-          assert.strictEqual(r[3], -1, 'Using defense; Single with runners on second and third; third always empty');
+          assert.strictEqual(r[1], 18, 'Using defense; Single with bases loaded; always same runner on first');
+          assert.strictEqual(r[2], 15, 'Using defense; Single with bases loaded; second always contains runner from first');
+          assert.strictEqual(r[3], -1, 'Using defense; Single with bases loaded; third always empty');
           if(r[0] === 6){
-            assert.strictEqual(r[4], 1, 'Using defense; Single with runners on second and third; if one run scores than than one runner was thrown out at the plate');
+            assert.strictEqual(r[4], 1, 'Using defense; Single with bases loaded; if one run scores than than one runner was thrown out at the plate');
           }
           else if(r[0] === 7){
-            assert.strictEqual(r[4], 0, 'Using defense; Single with runners on second and third; if 2 runs score then no outs made');
+            assert.strictEqual(r[4], 0, 'Using defense; Single with bases loaded; if 2 runs score then no outs made');
           }
           else {
-            assert.ok(false, 'Using defense; Single with runners on second and third; score should be one of two strict values')
+            assert.ok(false, 'Using defense; Single with bases loaded; score should be one of two strict values')
           }
         }
       },
       
       result_1bplus: function () {
-        assert.strictEqual(sim.result_1bplus(false, 15, [0,-1,-1,-1])[0], 0, 'Single plus with bases empty, score stays the same');
-        assert.strictEqual(sim.result_1bplus(false, 15, [0,-1,-1,-1])[1], -1, 'Bases empty');
-        assert.strictEqual(sim.result_1bplus(false, 15, [0,-1,-1,-1])[2], 15, 'Bases empty');
-        assert.strictEqual(sim.result_1bplus(false, 15, [0,-1,-1,-1])[3], -1, 'Bases empty');
+        var r;
+        r = sim.result_1bplus(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'No Defense; Single plus with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'No Defense; Single plus with bases empty, first vacant');
+        assert.strictEqual(r[2], 15, 'No Defense; Single plus with bases empty, runner on second');
+        assert.strictEqual(r[3], -1, 'No Defense; Single plus with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'No Defense; Single plus with bases empty, outs stay the same');
         
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,-1,10,22])[0], 6, 'Single plus with runners on second and third.');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,-1,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,-1,10,22])[2], 18, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,-1,10,22])[3], 10, 'full');
+        r = sim.result_1bplus(0, 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 6, 'No Defense; Single plus with runners on second and third, score +1');
+        assert.strictEqual(r[1], -1, 'No Defense; Single plus with runners on second and third, first empty');
+        assert.strictEqual(r[2], 18, 'No Defense; Single plus with runners on second and third, batter on second');
+        assert.strictEqual(r[3], 10, 'No Defense; Single plus with runners on second and third, runner second to third');
+        assert.strictEqual(r[4], 0, 'No Defense; Single plus with runners on second and third, outs stay the same');
         
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,22,-1,-1])[0], 5, 'Single plus with runner on first.');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,22,-1,-1])[1], 18, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,22,-1,-1])[2], 22, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,22,-1,-1])[3], -1, 'full');
+        r = sim.result_1bplus(0, 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 5, 'No Defense; Single plus with runner on first, score same');
+        assert.strictEqual(r[1], 18, 'No Defense; Single plus with runner on first, batter on first');
+        assert.strictEqual(r[2], 22, 'No Defense; Single plus with runner on first, runner first to second');
+        assert.strictEqual(r[3], -1, 'No Defense; Single plus with runner on first, third empty');
+        assert.strictEqual(r[4], 0, 'No Defense; Single plus with runner on first, outs same');
         
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,15,10,22])[0], 6, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,15,10,22])[1], 18, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,15,10,22])[2], 15, 'full');
-        assert.strictEqual(sim.result_1bplus(false, 18, [5,15,10,22])[3], 10, 'full');
+        r = sim.result_1bplus(0, 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 6, 'No Defense; Single plus with bases loaded; score +1');
+        assert.strictEqual(r[1], 18, 'No Defense; Single plus with bases loaded; batter on first');
+        assert.strictEqual(r[2], 15, 'No Defense; Single plus with bases loaded; runner first to second');
+        assert.strictEqual(r[3], 10, 'No Defense; Single plus with bases loaded; runner second to third');
+        assert.strictEqual(r[4], 0, 'No Defense; Single plus with bases loaded; outs same');
+        
+        r = sim.result_1bplus([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'Using Defense; Single plus with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Single plus with bases empty, first empty');
+        assert.strictEqual(r[2], 15, 'Using Defense; Single plus with bases empty, runner on second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Single plus with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'Using Defense; Single plus with bases empty, outs stay the same');
+        
+        for (var i = 0; i < 100; i++) {
+          r = sim.result_1bplus([5,5,5], 18, [5,-1,10,22,0]);
+          assert.strictEqual(r[1], -1, 'Using Defense; Single plus with runners on second and third; first empty');
+          assert.strictEqual(r[2], 18, 'Using Defense; Single plus with runners on second and third; batter on second');
+          assert.strictEqual(r[3], -1, 'Using Defense; Single plus with runners on second and third; third always empty');
+          if(r[0] === 6){
+            assert.strictEqual(r[4], 1, 'Using Defense; Single plus with runners on second and third, outs +1 when only 1 run scores');
+          }
+          else if(r[0] === 7){
+            assert.strictEqual(r[4], 0, 'Using Defense; Single plus with runners on second and third, outs same when 2 runs score');
+          }
+          else {
+            assert.ok(false, 'Using Defense; Single plus with runners on second and third; score should be one of two strict values')
+          }
+        }
+        
+        r = sim.result_1bplus([5,5,5], 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 5, 'Using Defense; Single plus with runner on first, score same');
+        assert.strictEqual(r[1], 18, 'Using Defense; Single plus with runner on first, batter on first');
+        assert.strictEqual(r[2], 22, 'Using Defense; Single plus with runner on first, runner first to second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Single plus with runner on first, third empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Single plus with runner on first, outs same');
+        
+        for (var i = 0; i < 100; i++) {
+          r = sim.result_1bplus([5,5,5], 18, [5,15,10,22,0]);
+          assert.strictEqual(r[1], 18, 'Using defense; Single plus with bases loaded; batter on first');
+          assert.strictEqual(r[2], 15, 'Using defense; Single plus with bases loaded; runner first to second');
+          assert.strictEqual(r[3], -1, 'Using defense; Single plus with bases loaded; third always empty');
+          if(r[0] === 6){
+            assert.strictEqual(r[4], 1, 'Using defense; Single plus with bases loaded; if one run scores than than one runner was thrown out at the plate');
+          }
+          else if(r[0] === 7){
+            assert.strictEqual(r[4], 0, 'Using defense; Single plus with bases loaded; if 2 runs score then no outs made');
+          }
+          else {
+            assert.ok(false, 'Using defense; Single plus with bases loaded; score should be one of two strict values')
+          }
+        }
       },
       
       result_2b: function () {
-        assert.strictEqual(sim.result_2b(false, 15, [0,-1,-1,-1])[0], 0, 'Double with bases empty, score stays the same');
-        assert.strictEqual(sim.result_2b(false, 15, [0,-1,-1,-1])[1], -1, 'Bases empty');
-        assert.strictEqual(sim.result_2b(false, 15, [0,-1,-1,-1])[2], 15, 'Bases empty');
-        assert.strictEqual(sim.result_2b(false, 15, [0,-1,-1,-1])[3], -1, 'Bases empty');
+        var r;
+        r = sim.result_2b(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'No Defense; Double with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'No Defense; Double with bases empty, first vacant');
+        assert.strictEqual(r[2], 15, 'No Defense; Double with bases empty, runner on second');
+        assert.strictEqual(r[3], -1, 'No Defense; Double with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'No Defense; Double with bases empty, outs stay the same');
         
-        assert.strictEqual(sim.result_2b(false, 18, [5,-1,10,22])[0], 7, 'Double with runners on second and third.');
-        assert.strictEqual(sim.result_2b(false, 18, [5,-1,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,-1,10,22])[2], 18, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,-1,10,22])[3], -1, 'full');
+        r = sim.result_2b(0, 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'No Defense; Double with runners on second and third, score +2');
+        assert.strictEqual(r[1], -1, 'No Defense; Double with runners on second and third, first empty');
+        assert.strictEqual(r[2], 18, 'No Defense; Double with runners on second and third, batter on second');
+        assert.strictEqual(r[3], -1, 'No Defense; Double with runners on second and third, third empty');
+        assert.strictEqual(r[4], 0, 'No Defense; Double with runners on second and third, outs stay the same');
         
-        assert.strictEqual(sim.result_2b(false, 18, [5,22,-1,-1])[0], 5, 'Double with runner on first.');
-        assert.strictEqual(sim.result_2b(false, 18, [5,22,-1,-1])[1], -1, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,22,-1,-1])[2], 18, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,22,-1,-1])[3], 22, 'full');
+        r = sim.result_2b(0, 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 5, 'No Defense; Double with runner on first, score same');
+        assert.strictEqual(r[1], -1, 'No Defense; Double with runner on first, first empty');
+        assert.strictEqual(r[2], 18, 'No Defense; Double with runner on first, batter on second');
+        assert.strictEqual(r[3], 22, 'No Defense; Double with runner on first, runner first to third');
+        assert.strictEqual(r[4], 0, 'No Defense; Double with runner on first, outs same');
         
-        assert.strictEqual(sim.result_2b(false, 18, [5,15,10,22])[0], 7, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,15,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,15,10,22])[2], 18, 'full');
-        assert.strictEqual(sim.result_2b(false, 18, [5,15,10,22])[3], 15, 'full');
+        r = sim.result_2b(0, 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 7, 'No Defense; Double with bases loaded; score +2');
+        assert.strictEqual(r[1], -1, 'No Defense; Double with bases loaded; first empty');
+        assert.strictEqual(r[2], 18, 'No Defense; Double with bases loaded; batter on second');
+        assert.strictEqual(r[3], 15, 'No Defense; Double with bases loaded; runner first to third');
+        assert.strictEqual(r[4], 0, 'No Defense; Double with bases loaded; outs same');
+        
+        r = sim.result_2b([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'Using Defense; Double with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Double with bases empty, first empty');
+        assert.strictEqual(r[2], 15, 'Using Defense; Double with bases empty, runner on second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Double with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'Using Defense; Double with bases empty, outs stay the same');
+        
+        r = sim.result_2b([5,5,5], 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using Defense; Double with runners on second and third; score +2');
+        assert.strictEqual(r[1], -1, 'Using Defense; Double with runners on second and third; first empty');
+        assert.strictEqual(r[2], 18, 'Using Defense; Double with runners on second and third; batter on second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Double with runners on second and third; third empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Double with runners on second and third, outs same');
+        
+        for (var i = 0; i < 100; i++) {
+          r = sim.result_2b([5,5,5], 18, [5,22,-1,-1,0]);
+          assert.strictEqual(r[1], -1, 'Using Defense; Double with runner on first, first empty');
+          assert.strictEqual(r[2], 18, 'Using Defense; Double with runner on first, batter on second');
+          assert.strictEqual(r[3], -1, 'Using Defense; Double with runner on first, third empty');
+          if(r[0] === 5){
+            assert.strictEqual(r[4], 1, 'Using Defense; Double with runners on second and third, outs +1 when nobody scores');
+          }
+          else if(r[0] === 6){
+            assert.strictEqual(r[4], 0, 'Using Defense; Double with runners on second and third, outs same when 1 run scores');
+          }
+          else {
+            assert.ok(false, 'Using Defense; Double with runners on second and third; score should be one of two strict values')
+          }
+        }
+        
+        for (var i = 0; i < 100; i++) {
+          r = sim.result_2b([5,5,5], 18, [5,15,10,22,0]);
+          assert.strictEqual(r[1], -1, 'Using defense; Double with bases loaded; first empty');
+          assert.strictEqual(r[2], 18, 'Using defense; Double with bases loaded; batter on second');
+          assert.strictEqual(r[3], -1, 'Using defense; Double with bases loaded; third always empty');
+          if(r[0] === 7){
+            assert.strictEqual(r[4], 1, 'Using defense; Double with bases loaded; if 2 runs score than than one runner was thrown out at the plate');
+          }
+          else if(r[0] === 8){
+            assert.strictEqual(r[4], 0, 'Using defense; Double with bases loaded; if 3 runs score then no outs made');
+          }
+          else {
+            assert.ok(false, 'Using defense; Double with bases loaded; score should be one of two strict values')
+          }
+        }
       },
       
       result_3b: function () {
-        assert.strictEqual(sim.result_3b(false, 15, [0,-1,-1,-1])[0], 0, 'Triple with bases empty, score stays the same');
-        assert.strictEqual(sim.result_3b(false, 15, [0,-1,-1,-1])[1], -1, 'Bases empty');
-        assert.strictEqual(sim.result_3b(false, 15, [0,-1,-1,-1])[2], -1, 'Bases empty');
-        assert.strictEqual(sim.result_3b(false, 15, [0,-1,-1,-1])[3], 15, 'Bases empty');
+        var r;
+        r = sim.result_3b(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'No Defense; Triple with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'No Defense; Triple with bases empty, first vacant');
+        assert.strictEqual(r[2], -1, 'No Defense; Triple with bases empty, second vacant');
+        assert.strictEqual(r[3], 15, 'No Defense; Triple with bases empty, batter on third');
+        assert.strictEqual(r[4], 0, 'No Defense; Triple with bases empty, outs stay the same');
         
-        assert.strictEqual(sim.result_3b(false, 18, [5,-1,10,22])[0], 7, 'Triple with runners on second and third.');
-        assert.strictEqual(sim.result_3b(false, 18, [5,-1,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,-1,10,22])[2], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,-1,10,22])[3], 18, 'full');
+        r = sim.result_3b(0, 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'No Defense; Triple with runners on second and third, score +2');
+        assert.strictEqual(r[1], -1, 'No Defense; Triple with runners on second and third, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Triple with runners on second and third, second empty');
+        assert.strictEqual(r[3], 18, 'No Defense; Triple with runners on second and third, batter on third');
+        assert.strictEqual(r[4], 0, 'No Defense; Triple with runners on second and third, outs stay the same');
         
-        assert.strictEqual(sim.result_3b(false, 18, [5,22,-1,-1])[0], 6, 'Triple with runner on first.');
-        assert.strictEqual(sim.result_3b(false, 18, [5,22,-1,-1])[1], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,22,-1,-1])[2], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,22,-1,-1])[3], 18, 'full');
+        r = sim.result_3b(0, 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 6, 'No Defense; Triple with runner on first, score +1');
+        assert.strictEqual(r[1], -1, 'No Defense; Triple with runner on first, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Triple with runner on first, second empty');
+        assert.strictEqual(r[3], 18, 'No Defense; Triple with runner on first, batter on third');
+        assert.strictEqual(r[4], 0, 'No Defense; Triple with runner on first, outs same');
         
-        assert.strictEqual(sim.result_3b(false, 18, [5,15,10,22])[0], 8, 'Triple');
-        assert.strictEqual(sim.result_3b(false, 18, [5,15,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,15,10,22])[2], -1, 'full');
-        assert.strictEqual(sim.result_3b(false, 18, [5,15,10,22])[3], 18, 'full');
+        r = sim.result_3b(0, 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 8, 'No Defense; Triple with bases loaded; score +3');
+        assert.strictEqual(r[1], -1, 'No Defense; Triple with bases loaded; first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Triple with bases loaded; second empty');
+        assert.strictEqual(r[3], 18, 'No Defense; Triple with bases loaded; batter on third');
+        assert.strictEqual(r[4], 0, 'No Defense; Triple with bases loaded; outs same');
+        
+        r = sim.result_3b([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 0, 'Using Defense; Triple with bases empty, score stays the same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Triple with bases empty, first vacant');
+        assert.strictEqual(r[2], -1, 'Using Defense; Triple with bases empty, second vacant');
+        assert.strictEqual(r[3], 15, 'Using Defense; Triple with bases empty, batter on third');
+        assert.strictEqual(r[4], 0, 'Using Defense; Triple with bases empty, outs stay the same');
+        
+        r = sim.result_3b([5,5,5], 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using Defense; Triple with runners on second and third, score +2');
+        assert.strictEqual(r[1], -1, 'Using Defense; Triple with runners on second and third, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Triple with runners on second and third, second empty');
+        assert.strictEqual(r[3], 18, 'Using Defense; Triple with runners on second and third, batter on third');
+        assert.strictEqual(r[4], 0, 'Using Defense; Triple with runners on second and third, outs stay the same');
+        
+        r = sim.result_3b([5,5,5], 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 6, 'Using Defense; Triple with runner on first, score +1');
+        assert.strictEqual(r[1], -1, 'Using Defense; Triple with runner on first, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Triple with runner on first, second empty');
+        assert.strictEqual(r[3], 18, 'Using Defense; Triple with runner on first, batter on third');
+        assert.strictEqual(r[4], 0, 'Using Defense; Triple with runner on first, outs same');
+        
+        r = sim.result_3b([5,5,5], 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 8, 'Using Defense; Triple with bases loaded; score +3');
+        assert.strictEqual(r[1], -1, 'Using Defense; Triple with bases loaded; first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Triple with bases loaded; second empty');
+        assert.strictEqual(r[3], 18, 'Using Defense; Triple with bases loaded; batter on third');
+        assert.strictEqual(r[4], 0, 'Using Defense; Triple with bases loaded; outs same');
       },
       
       result_hr: function () {
-        assert.strictEqual(sim.result_hr(false, 15, [0,-1,-1,-1])[0], 1, 'HR with bases empty, score stays the same');
-        assert.strictEqual(sim.result_hr(false, 15, [0,-1,-1,-1])[1], -1, 'Bases empty');
-        assert.strictEqual(sim.result_hr(false, 15, [0,-1,-1,-1])[2], -1, 'Bases empty');
-        assert.strictEqual(sim.result_hr(false, 15, [0,-1,-1,-1])[3], -1, 'Bases empty');
+        var r;
+        r = sim.result_hr(0, 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 1, 'No Defense; Home Run with bases empty, score +1');
+        assert.strictEqual(r[1], -1, 'No Defense; Home Run with bases empty, first vacant');
+        assert.strictEqual(r[2], -1, 'No Defense; Home Run with bases empty, second vacant');
+        assert.strictEqual(r[3], -1, 'No Defense; Home Run with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'No Defense; Home Run with bases empty, outs stay the same');
         
-        assert.strictEqual(sim.result_hr(false, 18, [5,-1,10,22])[0], 8, 'HR with runners on second and third.');
-        assert.strictEqual(sim.result_hr(false, 18, [5,-1,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,-1,10,22])[2], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,-1,10,22])[3], -1, 'full');
+        r = sim.result_hr(0, 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 8, 'No Defense; Home Run with runners on second and third, score +3');
+        assert.strictEqual(r[1], -1, 'No Defense; Home Run with runners on second and third, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Home Run with runners on second and third, second empty');
+        assert.strictEqual(r[3], -1, 'No Defense; Home Run with runners on second and third, third empty');
+        assert.strictEqual(r[4], 0, 'No Defense; Home Run with runners on second and third, outs stay the same');
         
-        assert.strictEqual(sim.result_hr(false, 18, [5,22,-1,-1])[0], 7, 'HR with runner on first.');
-        assert.strictEqual(sim.result_hr(false, 18, [5,22,-1,-1])[1], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,22,-1,-1])[2], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,22,-1,-1])[3], -1, 'full');
+        r = sim.result_hr(0, 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 7, 'No Defense; Home Run with runner on first, score +2');
+        assert.strictEqual(r[1], -1, 'No Defense; Home Run with runner on first, first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Home Run with runner on first, second empty');
+        assert.strictEqual(r[3], -1, 'No Defense; Home Run with runner on first, third empty');
+        assert.strictEqual(r[4], 0, 'No Defense; Home Run with runner on first, outs same');
         
-        assert.strictEqual(sim.result_hr(false, 18, [5,15,10,22])[0], 9, 'HR');
-        assert.strictEqual(sim.result_hr(false, 18, [5,15,10,22])[1], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,15,10,22])[2], -1, 'full');
-        assert.strictEqual(sim.result_hr(false, 18, [5,15,10,22])[3], -1, 'full');
+        r = sim.result_hr(0, 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 9, 'No Defense; Home Run with bases loaded; score +4');
+        assert.strictEqual(r[1], -1, 'No Defense; Home Run with bases loaded; first empty');
+        assert.strictEqual(r[2], -1, 'No Defense; Home Run with bases loaded; second empty');
+        assert.strictEqual(r[3], -1, 'No Defense; Home Run with bases loaded; third empty');
+        assert.strictEqual(r[4], 0, 'No Defense; Home Run with bases loaded; outs same');
+        
+        r = sim.result_hr([5,5,5], 15, [0,-1,-1,-1,0]);
+        assert.strictEqual(r[0], 1, 'Using Defense; Home Run with bases empty, score +1');
+        assert.strictEqual(r[1], -1, 'Using Defense; Home Run with bases empty, first vacant');
+        assert.strictEqual(r[2], -1, 'Using Defense; Home Run with bases empty, second vacant');
+        assert.strictEqual(r[3], -1, 'Using Defense; Home Run with bases empty, third vacant');
+        assert.strictEqual(r[4], 0, 'Using Defense; Home Run with bases empty, outs stay the same');
+        
+        r = sim.result_hr([5,5,5], 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 8, 'Using Defense; Home Run with runners on second and third, score +3');
+        assert.strictEqual(r[1], -1, 'Using Defense; Home Run with runners on second and third, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Home Run with runners on second and third, second empty');
+        assert.strictEqual(r[3], -1, 'Using Defense; Home Run with runners on second and third, third empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Home Run with runners on second and third, outs stay the same');
+        
+        r = sim.result_hr([5,5,5], 18, [5,22,-1,-1,0]);
+        assert.strictEqual(r[0], 7, 'Using Defense; Home Run with runner on first, score +2');
+        assert.strictEqual(r[1], -1, 'Using Defense; Home Run with runner on first, first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Home Run with runner on first, second empty');
+        assert.strictEqual(r[3], -1, 'Using Defense; Home Run with runner on first, third empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Home Run with runner on first, outs same');
+        
+        r = sim.result_hr([5,5,5], 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 9, 'Using Defense; Home Run with bases loaded; score +4');
+        assert.strictEqual(r[1], -1, 'Using Defense; Home Run with bases loaded; first empty');
+        assert.strictEqual(r[2], -1, 'Using Defense; Home Run with bases loaded; second empty');
+        assert.strictEqual(r[3], -1, 'Using Defense; Home Run with bases loaded; third empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Home Run with bases loaded; outs same');
       }
+      
     });
 });
