@@ -79,7 +79,9 @@ define([], function() {
   var batters;
   var pitchers;
   
-  
+  var CATCHER = 0;
+  var INFIELD = 1;
+  var OUTFIELD = 2;
   
   
   /****************** THE ACTUAL SIMULATION CODE *********************/
@@ -89,9 +91,9 @@ define([], function() {
   //    * return the average number of each result as a percentage of average number of plate appearances
   // The function simulates a large number of innings played, and does that many times to average the results. 
   //
-  // If defense is to be used: defense[0] = catcher throwing
-  //                           defense[1] = infield
-  //                           defense[2] = outfield
+  // If defense is to be used: defense[0] = defense[CATCHER] =catcher throwing
+  //                           defense[1] = defense[INFIELD] =infield
+  //                           defense[2] = defense[OUTFIELD] =outfield
   // If defense to be ignored: defense = 0
   function run(b, p, defense){
     // Set so other methods can access
@@ -305,8 +307,114 @@ define([], function() {
         // Nobody advances!
       }
       else{
-        
+        // 8 combinations of baserunners, 3 possibilities for number of outs (24 configurations)
+        // Two outs (8 out of 24), nothing happens besides batter out, so logic
+        // only matters with 0 or 1 outs
+        if(status[4] < 2){
+          // No runners on base
+          if(status[1] == -1 && status[2] == -1 && status[3] == -1){
+            // nothing happens
+          }
+          // Runner on first only
+          else if(status[1] != -1 && status[2] == -1 && status[3] == -1){
+            //try double play
+            if(defenseThrow(defense[INFIELD], curBatterSpeed)){
+              // both runners out
+              status[4]++;
+              status[1] = -1;
+            }
+            else{
+              // batter to first
+              status[1] = curBatterSpeed;
+            }
+          }
+          // Runner on second only
+          else if(status[1] == -1 && status[2] != -1 && status[3] == -1){
+            //runner to third
+            status[3] = status[2];
+            status[2] = -1;
+          }
+          // Runner on third only
+          else if(status[1] == -1 && status[2] == -1 && status[3] != -1){
+            //runner scores
+            status[0]++;
+            status[3] = -1;
+          }
+          // Runner on first and second
+          else if(status[1] != -1 && status[2] != -1 && status[3] == -1){
+            //try double play
+            if(defenseThrow(defense[INFIELD], curBatterSpeed)){
+              // if there is already one out, the runner doesn't end up on third after a twin killing
+              if(status[4] == 0){
+                status[3] = status[2];
+                status[2] = -1;
+              }
+              // both runners out
+              status[4]++;
+              status[1] = -1;
+            }
+            else{
+              // batter to first, runner second to third
+              status[1] = curBatterSpeed;
+              status[3] = status[2];
+              status[2] = -1;
+            }
+          }
+          // Runner on first and third
+          else if(status[1] != -1 && status[2] == -1 && status[3] != -1){
+            //try double play
+            if(defenseThrow(defense[INFIELD], curBatterSpeed)){
+              // if there is already one out, the runner doesn't score after a twin killing
+              if(status[4] == 0){
+                status[0]++;
+                status[3] = -1;
+              }
+              // both runners out
+              status[4]++;
+              status[1] = -1;
+            }
+            else{
+              // batter to first, runner scores
+              status[1] = curBatterSpeed;
+              status[0]++;
+              status[3] = -1;
+            }
+          }
+          // Runners on second and third
+          else if(status[1] == -1 && status[2] != -1 && status[3] != -1){
+            // both runners advance
+            status[0]++;
+            status[3] = status[2];
+            status[2] = -1;
+          }
+          // Bases loaded
+          else if(status[1] != -1 && status[2] != -1 && status[3] != -1){
+            //try double play
+            if(defenseThrow(defense[INFIELD], curBatterSpeed)){
+              // if there is already one out, nobody advances after a twin killing
+              if(status[4] == 0){
+                status[0]++;
+                status[3] = status[2];
+                status[2] = -1;
+              }
+              // both runners out
+              status[4]++;
+              status[1] = -1;
+            }
+            else{
+              // batter to first, two runners advance
+              status[1] = curBatterSpeed;
+              status[0]++;
+              status[3] = status[2];
+              status[2] = -1;
+            }
+          }
+          else{
+            console.error("Error: result_gb fell all the way through");
+          }
+        }
       }
+      status[4]++;
       return status;
     }
     
@@ -378,7 +486,7 @@ define([], function() {
           status[3] = status[2];
           status[2] = -1;
           // ...then tries for home
-          if(defenseThrow(defense[2], status[3] + 5)){
+          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
             status[4]++; // thrown out
           }
           else{
@@ -423,7 +531,7 @@ define([], function() {
           status[3] = status[2];
           status[2] = -1;
           // ...then tries for home
-          if(defenseThrow(defense[2], status[3] + 5)){
+          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
             status[4]++; // thrown out
           }
           else{
@@ -472,7 +580,7 @@ define([], function() {
           status[3] = status[1];
           status[1] = -1;
           // ...then tries for home
-          if(defenseThrow(defense[2], status[3] + 5)){
+          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
             status[4]++; // thrown out
           }
           else{
