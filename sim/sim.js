@@ -424,8 +424,22 @@ define([], function() {
         // Nobody advances!
       }
       else{
+        // Only matters if less than 2 outs.
+        if(status[4] < 2){
+          // Runner on third speed A or B scores
+          if(status[3] >= 13){
+            status[0]++;
+            status[3] = -1;
+          }
+          // no runner on third, speed A runner on second advances
+          else if(status[3] == -1 && status[2] >= 18){
+            status[3] = status[2];
+            status[2] = -1;
+          }
         
+        }
       }
+      status[4]++;
       return status;
     }
     
@@ -482,18 +496,9 @@ define([], function() {
           status[0]++;
           status[3] = -1;
         }
-        if(status[2] != -1){ // runner on second goes to third...
-          status[3] = status[2];
+        if(status[2] != -1){ // runner on second scores
+          status[0]++;
           status[2] = -1;
-          // ...then tries for home
-          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
-            status[4]++; // thrown out
-          }
-          else{
-            status[0]++; // scores
-          }
-          // Either way, runner no longer on third
-          status[3] = -1;
         }
         if(status[1] != -1){ // runner on first goes to second
           status[2] = status[1];
@@ -527,18 +532,10 @@ define([], function() {
           status[0]++;
           status[3] = -1;
         }
-        if(status[2] != -1){ // runner on second goes to third...
-          status[3] = status[2];
+        if(status[2] != -1){ // runner on second scores
+          status[0]++;
           status[2] = -1;
-          // ...then tries for home
-          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
-            status[4]++; // thrown out
-          }
-          else{
-            status[0]++; // scores
-          }
-          // Either way, runner no longer on third
-          status[3] = -1;
+          
         }
         if(status[1] != -1){ // runner on first goes to second, batter goes to first
           status[2] = status[1];
@@ -579,15 +576,11 @@ define([], function() {
         if(status[1] != -1){ // runner goes first to third
           status[3] = status[1];
           status[1] = -1;
-          // ...then tries for home
-          if(defenseThrow(defense[OUTFIELD], status[3] + 5)){
-            status[4]++; // thrown out
+          // ...then scores if he's speed A and 2 outs
+          if(status[4] == 2 && status[3] >= 18){
+            status[0]++;
+            status[3] = -1;
           }
-          else{
-            status[0]++; // scores
-          }
-          // Either way, runner no longer on third
-          status[3] = -1;
         }
         status[2] = curBatterSpeed; // batter stands on second
       }

@@ -348,19 +348,69 @@ define([
         
       },
       
+      // fb function of tests is not comprehensive like the gb one is; more of a smattering of tests.
       result_fb: function () {
         var r;
         r = sim.result_fb(0, 15, [0,-1,-1,-1,0]);
         // 8 combinations of baserunners, 3 possibilities for number of outs (24 configurations)
+        // Two outs (8 out of 24), No runners on base or runner on first only, 0 or 1 out (4 out of 24), nothing happens (12 out of 24)
         
-        // Two outs (8 out of 24)
-        // No runners on base or runner on first only, 0 or 1 out (4 out of 24)
-        // Runner on second only, 0 or 1 outs
-        // Runner on third only, 0 or 1 outs
-        // Runner on first and second, 0 or 1 outs
-        // Runner on first and third, 0 or 1 outs
-        // Runner on second and third, 0 or 1 outs
-        // Bases loaded, 0 or 1 outs
+        // **NO DEFENSE**
+        r = sim.result_fb(0, 15, [7,-1,11,16,0]);
+        assert.strictEqual(r[0], 7, 'c76f8d51-5498-458b-87fe-ee0b758871c6');
+        assert.strictEqual(r[1], -1, 'a2e74256-9326-4ba2-9122-5a086e8951a0');
+        assert.strictEqual(r[2], 11, '5111ce47-0578-4107-8957-e139d2488888');
+        assert.strictEqual(r[3], 16, 'ba756ef4-f60d-45cc-82f4-97a90e265748');
+        assert.strictEqual(r[4], 1, '23f4f5bd-4634-41d3-9f47-008b7aedb518');
+        
+        r = sim.result_fb(0, 15, [7,-1,21,-1,1]);
+        assert.strictEqual(r[0], 7, '38561239-f420-4ce2-aad3-3dbc9a654ee8');
+        assert.strictEqual(r[1], -1, 'dfe461ed-4708-4803-ab87-3c7ecc66fef3');
+        assert.strictEqual(r[2], 21, '50493652-7a52-40fa-8d4b-07e02d660c3e');
+        assert.strictEqual(r[3], -1, 'a3f0f7ec-5f01-460d-930b-0cf714d615c2');
+        assert.strictEqual(r[4], 2, '3e173179-b850-4d30-8a92-6a13546e58c2');
+        
+        // **USING DEFENSE**
+        // Runner on third scores
+        r = sim.result_fb([5,5,5], 15, [7,-1,11,16,0]);
+        assert.strictEqual(r[0], 8, 'ccc56150-1836-4f46-90c7-2b6261041adf');
+        assert.strictEqual(r[1], -1, 'fdde4ed0-256b-4c6d-8726-18bc0e108722');
+        assert.strictEqual(r[2], 11, '4c6af645-9696-4b3c-bae0-35941fad5b6e');
+        assert.strictEqual(r[3], -1, 'c176a065-c62d-4a75-9396-23a6593f4515');
+        assert.strictEqual(r[4], 1, 'dbca2b1a-f7db-4550-9372-2a41ac05d329');
+        
+        // Nobody advances
+        r = sim.result_fb([5,5,5], 15, [7,11,16,-1,0]);
+        assert.strictEqual(r[0], 7, '1462003f-3a96-4368-9956-be782b3fe3e4');
+        assert.strictEqual(r[1], 11, '767a1b6d-d6e1-4b20-b987-02b5923618bc');
+        assert.strictEqual(r[2], 16, '666ba756-23ae-468e-8d02-73b196c1db83');
+        assert.strictEqual(r[3], -1, 'b3f54f9b-5d0c-4a0e-afaa-96085520f2f2');
+        assert.strictEqual(r[4], 1, '435c25a7-35b2-4704-a77a-d47a8a956509');
+        
+        // Runner on third scores
+        r = sim.result_fb([5,5,5], 15, [7,-1,21,16,1]);
+        assert.strictEqual(r[0], 8, 'c5927f85-c79d-4b37-b5a0-8f945ded3582');
+        assert.strictEqual(r[1], -1, '93c0710c-4087-4ff1-8b9c-260ae48f0ca0');
+        assert.strictEqual(r[2], 21, '580ce689-54e0-4e51-8b5f-fc17a3db4415');
+        assert.strictEqual(r[3], -1, '3515c469-4ffe-4624-9ec2-e8446b8f605b');
+        assert.strictEqual(r[4], 2, 'a641eccd-c51e-41a3-ad91-5ee3ffe4ff36');
+        
+        // Nobody advances
+        r = sim.result_fb([5,5,5], 15, [7,-1,21,10,1]);
+        assert.strictEqual(r[0], 7, 'b0b85879-a3f3-46df-a38a-374e75a57cca');
+        assert.strictEqual(r[1], -1, '780f51cd-cf51-4f1e-9ff2-4d71cb6155a9');
+        assert.strictEqual(r[2], 21, '34937912-ced8-4eff-a57e-ac58a82cd481');
+        assert.strictEqual(r[3], 10, '0dcedfff-a17a-4d33-a951-8d3994c204be');
+        assert.strictEqual(r[4], 2, '084da996-c6fb-4c27-8990-7892b4f6028d');
+        
+        // Runner on second advances
+        r = sim.result_fb([5,5,5], 15, [7,-1,18,-1,1]);
+        assert.strictEqual(r[0], 7, '932d9991-6e8f-4ce4-9852-26756a83605f');
+        assert.strictEqual(r[1], -1, '760394a2-09d2-4358-a19f-c65dbeaec473');
+        assert.strictEqual(r[2], -1, '028e93b8-c641-4404-9a37-26f5022f6b4d');
+        assert.strictEqual(r[3], 18, 'cf7a00b8-58ec-4f68-bb50-37b55c03a8b5');
+        assert.strictEqual(r[4], 2, '7bbe5f9d-467a-4706-9067-38102f130729');
+        
       },
       
       result_bb: function () {
@@ -431,21 +481,12 @@ define([
         assert.strictEqual(r[3], -1, 'dsingle with bases empty, third vacant');
         assert.strictEqual(r[4], 0, 'dsingle with bases empty, outs stay the same');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_1b([5,5,5], 18, [5,-1,10,22,0]);
-          assert.strictEqual(r[1], 18, 'dSingle with runners on second and third; always same runner on first');
-          assert.strictEqual(r[2], -1, 'dSingle with runners on second and third; second always empty');
-          assert.strictEqual(r[3], -1, 'dSingle with runners on second and third; third always empty');
-          if(r[0] === 6){
-            assert.strictEqual(r[4], 1, 'dSingle with runners on second and third, outs');
-          }
-          else if(r[0] === 7){
-            assert.strictEqual(r[4], 0, 'dSingle with runners on second and third, outs');
-          }
-          else {
-            assert.ok(false, 'dSingle with runners on second and third; score should be one of two strict values')
-          }
-        }
+        r = sim.result_1b([5,5,5], 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'dSingle with runners on second and third, score +2');
+        assert.strictEqual(r[1], 18, 'dSingle with runners on second and third; always same runner on first');
+        assert.strictEqual(r[2], -1, 'dSingle with runners on second and third; second always empty');
+        assert.strictEqual(r[3], -1, 'dSingle with runners on second and third; third always empty');
+        assert.strictEqual(r[4], 0, 'dSingle with runners on second and third, outs');
         
         r = sim.result_1b([5,5,5], 18, [5,22,-1,-1,0]);
         assert.strictEqual(r[0], 5, 'dSingle with runner on first, score');
@@ -454,21 +495,12 @@ define([
         assert.strictEqual(r[3], -1, 'dSingle with runner on first, third');
         assert.strictEqual(r[4], 0, 'dSingle with runner on first, outs');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_1b([5,5,5], 18, [5,15,10,22,0]);
-          assert.strictEqual(r[1], 18, 'Using defense; Single with bases loaded; always same runner on first');
-          assert.strictEqual(r[2], 15, 'Using defense; Single with bases loaded; second always contains runner from first');
-          assert.strictEqual(r[3], -1, 'Using defense; Single with bases loaded; third always empty');
-          if(r[0] === 6){
-            assert.strictEqual(r[4], 1, 'Using defense; Single with bases loaded; if one run scores than than one runner was thrown out at the plate');
-          }
-          else if(r[0] === 7){
-            assert.strictEqual(r[4], 0, 'Using defense; Single with bases loaded; if 2 runs score then no outs made');
-          }
-          else {
-            assert.ok(false, 'Using defense; Single with bases loaded; score should be one of two strict values')
-          }
-        }
+        r = sim.result_1b([5,5,5], 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using defense; Single with bases loaded; score +2');
+        assert.strictEqual(r[1], 18, 'Using defense; Single with bases loaded; always same runner on first');
+        assert.strictEqual(r[2], 15, 'Using defense; Single with bases loaded; second always contains runner from first');
+        assert.strictEqual(r[3], -1, 'Using defense; Single with bases loaded; third always empty');
+        assert.strictEqual(r[4], 0, 'Using defense; Single with bases loaded; outs same');
       },
       
       result_1bplus: function () {
@@ -508,21 +540,12 @@ define([
         assert.strictEqual(r[3], -1, 'Using Defense; Single plus with bases empty, third vacant');
         assert.strictEqual(r[4], 0, 'Using Defense; Single plus with bases empty, outs stay the same');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_1bplus([5,5,5], 18, [5,-1,10,22,0]);
-          assert.strictEqual(r[1], -1, 'Using Defense; Single plus with runners on second and third; first empty');
-          assert.strictEqual(r[2], 18, 'Using Defense; Single plus with runners on second and third; batter on second');
-          assert.strictEqual(r[3], -1, 'Using Defense; Single plus with runners on second and third; third always empty');
-          if(r[0] === 6){
-            assert.strictEqual(r[4], 1, 'Using Defense; Single plus with runners on second and third, outs +1 when only 1 run scores');
-          }
-          else if(r[0] === 7){
-            assert.strictEqual(r[4], 0, 'Using Defense; Single plus with runners on second and third, outs same when 2 runs score');
-          }
-          else {
-            assert.ok(false, 'Using Defense; Single plus with runners on second and third; score should be one of two strict values')
-          }
-        }
+        r = sim.result_1bplus([5,5,5], 18, [5,-1,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using Defense; Single plus with runners on second and third, score +2');
+        assert.strictEqual(r[1], -1, 'Using Defense; Single plus with runners on second and third; first empty');
+        assert.strictEqual(r[2], 18, 'Using Defense; Single plus with runners on second and third; batter on second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Single plus with runners on second and third; third always empty');
+        assert.strictEqual(r[4], 0, 'Using Defense; Single plus with runners on second and third, outs +1');
         
         r = sim.result_1bplus([5,5,5], 18, [5,22,-1,-1,0]);
         assert.strictEqual(r[0], 5, 'Using Defense; Single plus with runner on first, score same');
@@ -531,21 +554,13 @@ define([
         assert.strictEqual(r[3], -1, 'Using Defense; Single plus with runner on first, third empty');
         assert.strictEqual(r[4], 0, 'Using Defense; Single plus with runner on first, outs same');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_1bplus([5,5,5], 18, [5,15,10,22,0]);
-          assert.strictEqual(r[1], 18, 'Using defense; Single plus with bases loaded; batter on first');
-          assert.strictEqual(r[2], 15, 'Using defense; Single plus with bases loaded; runner first to second');
-          assert.strictEqual(r[3], -1, 'Using defense; Single plus with bases loaded; third always empty');
-          if(r[0] === 6){
-            assert.strictEqual(r[4], 1, 'Using defense; Single plus with bases loaded; if one run scores than than one runner was thrown out at the plate');
-          }
-          else if(r[0] === 7){
-            assert.strictEqual(r[4], 0, 'Using defense; Single plus with bases loaded; if 2 runs score then no outs made');
-          }
-          else {
-            assert.ok(false, 'Using defense; Single plus with bases loaded; score should be one of two strict values')
-          }
-        }
+        r = sim.result_1bplus([5,5,5], 18, [5,15,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using defense; Single plus with bases loaded; score +2');
+        assert.strictEqual(r[1], 18, 'Using defense; Single plus with bases loaded; batter on first');
+        assert.strictEqual(r[2], 15, 'Using defense; Single plus with bases loaded; runner first to second');
+        assert.strictEqual(r[3], -1, 'Using defense; Single plus with bases loaded; third always empty');
+        assert.strictEqual(r[4], 0, 'Using defense; Single plus with bases loaded; if 2 runs score then no outs made');
+        
       },
       
       result_2b: function () {
@@ -592,37 +607,34 @@ define([
         assert.strictEqual(r[3], -1, 'Using Defense; Double with runners on second and third; third empty');
         assert.strictEqual(r[4], 0, 'Using Defense; Double with runners on second and third, outs same');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_2b([5,5,5], 18, [5,22,-1,-1,0]);
-          assert.strictEqual(r[1], -1, 'Using Defense; Double with runner on first, first empty');
-          assert.strictEqual(r[2], 18, 'Using Defense; Double with runner on first, batter on second');
-          assert.strictEqual(r[3], -1, 'Using Defense; Double with runner on first, third empty');
-          if(r[0] === 5){
-            assert.strictEqual(r[4], 1, 'Using Defense; Double with runners on second and third, outs +1 when nobody scores');
-          }
-          else if(r[0] === 6){
-            assert.strictEqual(r[4], 0, 'Using Defense; Double with runners on second and third, outs same when 1 run scores');
-          }
-          else {
-            assert.ok(false, 'Using Defense; Double with runners on second and third; score should be one of two strict values')
-          }
-        }
+        r = sim.result_2b([5,5,5], 18, [5,22,-1,-1,1]);
+        assert.strictEqual(r[0], 5, 'Using Defense; Double with runners on second and third, score same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Double with runner on first, first empty');
+        assert.strictEqual(r[2], 18, 'Using Defense; Double with runner on first, batter on second');
+        assert.strictEqual(r[3], 22, 'Using Defense; Double with runner on first, runner on third');
+        assert.strictEqual(r[4], 1, 'Using Defense; Double with runners on second and third, outs same');
         
-        for (var i = 0; i < 100; i++) {
-          r = sim.result_2b([5,5,5], 18, [5,15,10,22,0]);
-          assert.strictEqual(r[1], -1, 'Using defense; Double with bases loaded; first empty');
-          assert.strictEqual(r[2], 18, 'Using defense; Double with bases loaded; batter on second');
-          assert.strictEqual(r[3], -1, 'Using defense; Double with bases loaded; third always empty');
-          if(r[0] === 7){
-            assert.strictEqual(r[4], 1, 'Using defense; Double with bases loaded; if 2 runs score than than one runner was thrown out at the plate');
-          }
-          else if(r[0] === 8){
-            assert.strictEqual(r[4], 0, 'Using defense; Double with bases loaded; if 3 runs score then no outs made');
-          }
-          else {
-            assert.ok(false, 'Using defense; Double with bases loaded; score should be one of two strict values')
-          }
-        }
+        r = sim.result_2b([5,5,5], 18, [5,22,-1,-1,2]);
+        assert.strictEqual(r[0], 6, 'Using Defense; Double with runners on first, score +1');
+        assert.strictEqual(r[1], -1, 'Using Defense; Double with runner on first, first empty');
+        assert.strictEqual(r[2], 18, 'Using Defense; Double with runner on first, batter on second');
+        assert.strictEqual(r[3], -1, 'Using Defense; Double with runner on first, third empty');
+        assert.strictEqual(r[4], 2, 'Using Defense; Double with runners on first, outs same');
+        
+        r = sim.result_2b([5,5,5], 18, [5,17,-1,-1,2]);
+        assert.strictEqual(r[0], 5, 'Using Defense; Double with speed B runner on first, score same');
+        assert.strictEqual(r[1], -1, 'Using Defense; Double with speed B runner on first, first empty');
+        assert.strictEqual(r[2], 18, 'Using Defense; Double with speed B runner on first, batter on second');
+        assert.strictEqual(r[3], 17, 'Using Defense; Double with speed B runner on first, runner on third');
+        assert.strictEqual(r[4], 2, 'Using Defense; Double with speed B runner on first, outs still 2');
+        
+        r = sim.result_2b([5,5,5], 18, [5,20,10,22,0]);
+        assert.strictEqual(r[0], 7, 'Using defense; Double with bases loaded speed A on first no outs, score same');
+        assert.strictEqual(r[1], -1, 'Using defense; Double with bases loaded speed A on first no outs,; first empty');
+        assert.strictEqual(r[2], 18, 'Using defense; Double with bases loaded speed A on first no outs,; batter on second');
+        assert.strictEqual(r[3], 20, 'Using defense; Double with bases loaded speed A on first no outs,; first to third');
+        assert.strictEqual(r[4], 0, 'Using defense; Double with bases loaded speed A on first no outs; still no outs');
+        
       },
       
       result_3b: function () {
