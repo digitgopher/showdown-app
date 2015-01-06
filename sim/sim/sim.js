@@ -52,6 +52,8 @@ define([], function() {
     "3b" : 6  // pitcher sees a double
   };
   
+  var orderMap = ["1st","2nd","3rd","4th","5th","6th","7th","8th","9th"];
+  
   var sig = 100; // sig = statistically significant
   var numGames = 162;
   
@@ -193,13 +195,22 @@ define([], function() {
     
     }
 
-    //console.log(temp);
-    // true flag means 9 batters, false means one
-    results = averageResults(true); // to contain all results of simulation as json to be displayed in browser
-    //console.log(results);
-    return JSON.stringify(results, function(key, val) {
+    // Always send 9 batters
+    results = averageResults(); // to contain all results of simulation as json to be displayed in browser
+    
+    // Add names and lineup order to results
+    for (var i = 0; i < batters.length; i++){
+      results[i].order = orderMap[i];
+      results[i].name = batters[i].name;
+    }
+    // Add name to pitcher results
+    results[9].name = pitchers[0].name;
+    
+    results = JSON.stringify(results, function(key, val) {
       return val.toFixed ? Number(val).toFixed(4).replace(/^0+/, '') : val;
     });
+    //console.log(results);
+    return results;
     // End simulation logic
   }
 
@@ -693,7 +704,7 @@ define([], function() {
     // At this point temp contains:
     //       temp[simNumber][batterNo,pitcher,score][each value]
     // n^3...ugh
-    function averageResults(nineBatters){
+    function averageResults(){
       // Initialize an array
       // var r = zeros([batters.length,batters[0][0].length]);
       // function zeros(dim){

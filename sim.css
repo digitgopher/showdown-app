@@ -111,6 +111,14 @@ div + div{
 }
 .score-results{
   margin-top: 10px;
+  width: 70%;
+  margin: 0 auto;
+}
+.score-val{
+  width: 50%;
+  margin: 0 auto;
+  font-size:1.5em;
+  
 }
 .bat-results{
   margin-top: 10px;
