@@ -1,3 +1,6 @@
+# From building jekyll
+_site
+
 # Subtree files
 /.gitignore
 

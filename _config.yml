@@ -1,0 +1,9 @@
+# Site settings
+title: The MLB Showdown Project
+tag_text: The MLB Showdown Project
+description: This is the description line, where we can describe the purpose of the site in succinct terms.
+
+# Build settings
+markdown: kramdown
+
+exclude: ["README.md"]
