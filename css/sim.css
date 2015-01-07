@@ -1,16 +1,63 @@
-/* CSS for the Showdown calculator page. */
 
-h1, h2, h3, p, ul, li, div{
-  font-family: "Open Sans";
+html {
+  font: 16px/1.5 "Open Sans", sans-serif;
 }
-h3{
-  font-weight: 400;
-  font-size: 24px;
+
+body {
+  margin: 2rem 0 5rem;
+  color: #333;
+}
+
+@media (min-width: 30rem) {
+  body {
+    margin-top: 5rem;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1;
+  color: #111111;
+  text-rendering: optimizeLegibility;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 30rem) {
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 3rem;
+  }
+}
+
+h1 a {
+  color: inherit;
+}
+h1 a:hover, h1 a:focus {
+  text-decoration: none;
+}
+
+h2 {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 30rem) {
+  h2 {
+    margin-top: 2.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+h3, h4, h5, h6 {
+  font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-
 }
+
 ul{
   font-size: 13px;
 }
@@ -21,7 +68,11 @@ p{
 
 a{
   text-decoration: none;
-  color:#66c63f;
+  color:#0077D9;
+}
+
+a:hover, a:focus {
+  text-decoration: underline;
 }
 
 img{
@@ -30,13 +81,12 @@ img{
   height: auto;
   display:block;
   margin-left: auto;
-margin-right: auto;
+  margin-right: auto;
 
 }
 
-
-p{
-  
+#simulation{
+  background-color: #DDFFFF;
 }
 
 .paragraph-block{
@@ -56,24 +106,23 @@ p{
   margin: 0px;
 }
 .batter-input,
-.defense-input,
-.speed-input{
+.pitcher-input{
   display:inline-block;
   background-color: #DADCE8;
+  /*max-width: 450px;*/
+}
+.speed-input{
+  display:inline-block;
+  background-color: #CCCEDB;
   border: 1px solid lightblue;
   /*max-width: 450px;*/
 }
-.pitcher-input{
-  display:block;
-  background: linear-gradient(45deg, #2bb673, #8dc63f); /* Standard syntax */;
-  color: #fff;
-  font-weight: 300;
-  padding: 10px;
-  width: 100%;
-  min-width: 450px;
-  max-width: 1080px;
-  margin: 0 auto 0 auto;
+.defense-input{
+  display:inline;
+  background-color: #CCCEDB;
+  border: 1px solid lightblue;
 }
+
 .i-n{
   font-weight:bold;
 }
@@ -107,7 +156,7 @@ div + div{
 }
 .results-after{
   margin-top: 10px;
-  background-color:#FFCC99;
+  background-color:#FFFBDB;
 }
 .score-results{
   margin-top: 10px;
@@ -126,15 +175,19 @@ div + div{
 .pit-results{
   margin-top: 10px;
 }
-table{
 
+table {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+} 
+
+td, th {
+  padding: .1rem .2rem;
 }
-thead{
 
-}
-tr{
-
-}
-td{
-
+.container {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
