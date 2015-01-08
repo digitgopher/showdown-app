@@ -14,11 +14,7 @@ body {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
-  line-height: 1;
-  color: #111111;
-  text-rendering: optimizeLegibility;
-}
+
 
 h1 {
   font-size: 2.5rem;
@@ -132,6 +128,7 @@ div + div{
 }
 .run{
   background-color: #FFFFBF;
+  margin: 1rem auto 0 auto;
 }
 
 #run-simulation{
@@ -140,17 +137,16 @@ div + div{
   font-size:1.3em;
 }
 .results-before{
-  margin-top: 10px;
   color: #D6D6D6;
   font: italic small-caps 100 48px/2 sans-serif;
   vertical-align: middle;
-  width:90%;
+  width:96%;
   background-color:#FFFBDB;
   height:200px;
   border:2px solid #DBDFFF;
   border-radius:20px;
   text-align:center;
-  margin: 10px auto 0 auto;
+  margin: 1rem auto 0 auto;
   /*float:right;*/
   /*padding:10px;*/
 }
@@ -190,4 +186,33 @@ td, th {
   max-width: 50rem;
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+.tooltip{
+    display: inline;
+    position: relative;
+}
+
+.tooltip:hover:after{
+    background: #FADEE0;
+    border-radius: 5px;
+    bottom: 26px;
+    content: attr(title);
+    font-size:.8em;
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+
+.tooltip:hover:before{
+    border: solid;
+    border-color: #FADEE0 transparent;
+    border-width: 6px 6px 0 6px;
+    bottom: 20px;
+    content: "";
+    left: 50%;
+    position: absolute;
+    z-index: 99;
 }

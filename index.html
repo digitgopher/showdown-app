@@ -7,8 +7,8 @@ Also be sure to look up our friends at <a href="http://mlbshowdowncards.blogspot
 
 <div id="simulation">
 
-  <h2> MLB Simulation </h2>
-    <p>Use this tool to get the average performance of a lineup of batters against a given pitcher.</p>
+  <h2>MLB Showdown Statistics Simulator</h2>
+    {% markdown sim-description.md %}
     <div id="container"><form id="inputForm"> <!-- Use ajax instead of: action="" method="post" -->
       <div class="pitcher-input">
         <h3> Pitcher</h3>
@@ -234,8 +234,8 @@ Also be sure to look up our friends at <a href="http://mlbshowdowncards.blogspot
 
     </form>
     <div class="run">
-      Fill Lineup with First Batter<input id="use-one-bat" type="checkbox">
-      Use Defense and Baserunning<input id="use-defense" type="checkbox">
+      <span title="Check this if you want to use the same batter 9 times." class="tooltip">Fill Lineup with First Batter</span><input id="use-one-bat" type="checkbox">
+      <span title="By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required." class="tooltip">Use Extra Bases</span><input id="use-defense" type="checkbox">
       <button id="run-simulation" name="run" type="button" value="Run Simulation" >Run Simulation</button>
     </div>
     <div class="results-before">
