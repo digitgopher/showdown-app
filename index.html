@@ -2,17 +2,19 @@
 layout: default
 ---
 
-We are working on a model to produce statistically accurate cards - <a href="https://github.com/digitgopher/MLBShowdownStatistics">read more here</a>!
-Also be sure to look up our friends at <a href="http://mlbshowdowncards.blogspot.com/">mlbshowdowncards.blogspot.com</a>. They are producing modern, quality MLB Showdown cards.
+We are working on a model to produce statistically accurate MLB Showdown baseball cards - <a href="https://github.com/digitgopher/MLBShowdownStatistics">read more here</a>!
+Also check out our friends at <a href="http://mlbshowdowncards.blogspot.com/">mlbshowdowncards.blogspot.com</a>. They are producing modern, quality MLB Showdown cards.
 
 
     
 <div id="simulation">
   <h2>MLB Showdown Statistics Simulator</h2>
-  {% capture content %}
-    {% include sim-description.md %}
-  {% endcapture %}
-  {{ content | markdownify }}
+  <div class="instr">
+    {% capture content %}
+      {% include sim-description.md %}
+    {% endcapture %}
+    {{ content | markdownify }}
+  </div>
     <div id="container"><form id="inputForm"> <!-- Use ajax instead of: action="" method="post" -->
       <div class="pitcher-input">
         <h3> Pitcher</h3>
@@ -238,8 +240,8 @@ Also be sure to look up our friends at <a href="http://mlbshowdowncards.blogspot
 
     </form>
     <div class="run">
-      <span title="Check this if you want to use the same batter 9 times." class="tooltip">Fill Lineup with First Batter</span><input id="use-one-bat" type="checkbox">
-      <span title="By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required." class="tooltip">Use Extra Bases</span><input id="use-defense" type="checkbox">
+      <span title="Check this if you want to use the same batter 9 times." class="tooltip">Fill Lineup with First Batter</span> <input id="use-one-bat" type="checkbox">
+      <span title="By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required." class="tooltip">Use Extra Bases</span> <input id="use-defense" type="checkbox">
       <button id="run-simulation" name="run" type="button" value="Run Simulation" >Run Simulation</button>
     </div>
     <div class="results-before">
