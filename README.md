@@ -1,5 +1,6 @@
-MLB Showdown Game Simulator
+[MLB Showdown Game Simulator](http://digitgopher.github.io/MLBShowdownStatistics)
 ============
-[Implemented here](http://digitgopher.github.io/MLBShowdownStatistics/)
 
-The engine for a simulator that outputs average game results (score and player stats).
+Get average Showdown game results (score and player stats).
+
+Used as a subtree in [MLBShowdownStatistics](http://digitgopher.github.io/MLBShowdownStatistics/)
