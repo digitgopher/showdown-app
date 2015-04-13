@@ -1,7 +1,3 @@
-
-# From building jekyll
-_site
-
 # Node server stuff - get that out of here.
 node_modules
 package.json
