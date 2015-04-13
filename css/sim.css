@@ -41,7 +41,7 @@ p {
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  align: center;
+  text-align: center;
 }
 
 @media (min-width: 30rem) {
