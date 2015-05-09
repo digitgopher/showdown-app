@@ -27,7 +27,7 @@ var svg = d3.select("body").append("svg")
 
 d3.json("batterExport.json", function(error, root) {
   var node = svg.selectAll(".node")
-      .data(bubble.nodes(classes(root))
+      .data(bubble.nodes(sortByOBOnly(root))
       .filter(function(d) { return !d.children; }))
     .enter().append("g")
       .attr("class", "node")
@@ -65,6 +65,31 @@ function classes(root) {
   recurse(null, root, null);
   return {children: classes};
 }
+
+
+function sortByOBOnly(root) {
+  var classes = [];
+  var i = 0;
+
+  function recurse(node, parent) {
+    if (node.hasOwnProperty('ob') && node.children){
+      node.children.forEach(function(child) { recurse(child, node); });
+      classes.push({OB: node.ob, value: i});
+      i = 0;
+    }
+    else if(node.children){
+      node.children.forEach(function(child) { recurse(child, node); });
+    }
+    else{
+      // it's a leaf!
+      i++;
+    }
+  }
+
+  recurse(root, null);
+  return {children: classes};
+}
+
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
