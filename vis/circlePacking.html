@@ -30,7 +30,7 @@
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
-<script src="http://cdn.jsdelivr.net/jquery/2.1.4/jquery.min.js"></script>
+<script src="jquery-1.11.1.min.js"></script>
 <script>
 
 var margin = 20,
@@ -56,7 +56,6 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 d3.json("batterExport.json", function(error, root) {
-  if (error) return console.error(error);
 
   var focus = root,
       nodes = pack.nodes(root),
@@ -65,8 +64,9 @@ d3.json("batterExport.json", function(error, root) {
   var circle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
-      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+      .attr("class", getClass)
       .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+      .style("display", visibility)
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 
   var text = svg.selectAll("text")
@@ -75,7 +75,7 @@ d3.json("batterExport.json", function(error, root) {
       .attr("class", "label")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.nm; });
 
   var node = svg.selectAll("circle,text");
 
@@ -98,21 +98,43 @@ d3.json("batterExport.json", function(error, root) {
     transition.selectAll("text")
       .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
         .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        
         .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
         .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+        
+    
   }
 
   function zoomTo(v) {
     var k = diameter / v[2]; view = v;
     node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
     circle.attr("r", function(d) { return d.r * k; });
+    //node.style("display", null );
   }
 });
 
-function getNumChildLeaves(node) {
-  var classes = [];
-  var i = 0;
+function visibility(d) {
+  if(false || (d.children && d.ob)) return null;
+  return null;
+}
 
+
+function getClass(d) {
+  if(d.parent){
+    if(d.children){
+      if(d.ob) return "node ob";
+      else if(d.outs) return "node outs";
+      else if(d.hr) return "node hr";
+      else return "node";
+    }
+    else return "node node--leaf";
+  }
+  return "node node--root";
+}
+      
+      
+function getNumChildLeaves(node) {
+  var i = 0;
   function recurse(node) {
     if(node.children){
       node.children.forEach(function(child) { recurse(child); });
@@ -136,8 +158,10 @@ var chart = $(".bubbleFrame"),
     container = chart.parent();
 $(window).on("resize", function() {
     var targetWidth = container.width();
-    chart.attr("width", targetWidth);
-    chart.attr("height", Math.round(targetWidth / aspect));
+    if(targetWidth < diameter){
+      chart.attr("width", targetWidth);
+      chart.attr("height", Math.round(targetWidth / aspect));
+    }
 }).trigger("resize");
 
 </script>
