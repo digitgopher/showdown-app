@@ -75,7 +75,7 @@ d3.json("batterExport.json", function(error, root) {
       .attr("class", "label")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.nm; });
+      .text(function(d) { return d.ob; });
 
   var node = svg.selectAll("circle,text");
 
@@ -98,11 +98,17 @@ d3.json("batterExport.json", function(error, root) {
     transition.selectAll("text")
       .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
         .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
         
         .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
         .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
         
-    
+    /*transition.selectAll("display")
+      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        
+        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });*/
   }
 
   function zoomTo(v) {
