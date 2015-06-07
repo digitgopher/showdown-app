@@ -1,8 +1,10 @@
-define(["jquery","sim/sim","sim/validate"], function($, simulation, validate) {
+define(["jquery","sim/sim"], function($, simulation) {
 
 /********* EVERYTHING THAT HAPPENS WHEN THE RUN SIMULATION BUTTON IS CLICKED ***********/
   $('#run-simulation').on("click", function() {
     // Collect all the input data
+    
+    
     var inputValues = $('#inputForm').serializeArray();
     var batters = []; // Contains a set of (key = batter name, value = batter object) objects
     var batter = {}; // Contains the attributes of a batter and their values

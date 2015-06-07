@@ -1,3 +1,30 @@
+/* Transparent Overlay */
+.loading:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 998;
+}
+.loading {
+  position: fixed;
+  z-index: 999;
+  height: 6em;
+  width: 6em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  font-size: 3rem;
+  color: black;
+}
+
 * {
   margin: 0;
 }
@@ -140,10 +167,6 @@ img{
 .i-n{
   font-weight:bold;
 }
-div + div{
-  margin: 3px 0px auto 0;
-  
-}
 .run{
   background-color: #FFFFBF;
   margin: 1rem auto 0 auto;
@@ -210,6 +233,13 @@ td, th , td select{
   /*width: 100%;*/
 }
 
+.bkgd{
+  background-color: #DADCE8; /* color defined in .pitcher-input */
+  font-weight: bold;
+  border: none;
+  text-align: center; /* match the center in the box which is centered in the td with matches th */
+}
+
 .tooltip{
   border-bottom: 1px dashed #FFADB3;
   display: inline;
@@ -239,3 +269,18 @@ td, th , td select{
   position: absolute;
   z-index: 99;
 } */
+
+.togglebutton{
+  color: #BDBDBD;
+  background-color:#DDFFFF;
+  border: 1px solid #ABFFFF;
+  float:left;
+  padding: 0px 2px;
+  cursor: default;
+}
+.button-on{
+  color: #000000;
+  background-color:#ABFFFF;
+  border: 1px solid #44FFFF;
+  font-weight: bolder;
+}

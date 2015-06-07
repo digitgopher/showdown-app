@@ -7,3 +7,4 @@ description: This is the description line, where we can describe the purpose of 
 markdown: kramdown
 
 exclude: ["README.md"]
+exclude: [node_modules]

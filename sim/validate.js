@@ -49,6 +49,7 @@ define(["jquery"], function($) {
   }
   
   // Add validators as needed
+  // Making them global on purpose so they can be deleted and reset
   function setValidation(numBatters,individualSum20Listeners,batChartClassNames){
     for (var i = 0; i < batChartClassNames.length; i++){
       individualSum20Listeners[i] = addchartValidateSum(batChartClassNames[i]);
@@ -58,25 +59,35 @@ define(["jquery"], function($) {
     });
   }
 
-  // Initialize validators
-  // Making them global on purpose so they can be deleted and reset
-  individualSum20Listeners = [];
-  batChartClassNames = ["p1c","b1c","b2c","b3c","b4c","b5c","b6c","b7c","b8c","b9c"];
-  setValidation(9,individualSum20Listeners,batChartClassNames);
-  
-  // Change form on user selections
-  $("#use-one-bat").change(function() {
-    $(".last-eight-batters").toggle();
-    $(".lineup-order").toggle();
-  });
-  $("#use-defense").change(function() {
-    $(".defense-input").toggle();
-    $(".speed-input").toggle();
-  });
-  
   // Add the validator to a single group:
   // $("select[name='b1c']").change(function() {
     // chartValidateSum("b1c");
   // });
+  
+  function validateView1(){
+    var allBatterVals = [];
+    var allBatterValsExist = true;
+    $(".input2 [name=ob]").each(function(){allBatterVals.push($(this).val())});
+    for (var i = 0; i < allBatterVals.length; i++){
+      if(allBatterVals[i].length > 0){
+        //excellent
+      }
+      else{
+        allBatterValsExist = false;
+        break;
+      }
+    }
+    if($(".input2 [name=c]").val().length > 0 && // pit set
+        (allBatterValsExist || ($(".input2 #first-batter [name=ob]").val().length > 0 && $("#use-one-bat").is(':checked')))){ // all batters set or first batter only set and that is allowed
+      $("#run-simulation").prop("disabled",false);
+    }
+    else{
+      $("#run-simulation").prop("disabled",true);
+    }
+  }
 
+  return {
+    setValidation:setValidation,
+    validateView1:validateView1
+  };
 });
