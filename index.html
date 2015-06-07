@@ -3,7 +3,7 @@ layout: default
 ---
 
 
-<div class="loading">Loading&#8230;</div>
+<div class="loading">Loading Player Data&#8230;</div>
 <div id="simulation">
   <div class="instr">
     {% capture content %}
@@ -400,8 +400,12 @@ layout: default
 
     </form>
     <div class="run">
-      <span title="Check this if you want to use the same batter 9 times." class="tooltip">Fill Lineup with First Batter</span> <input id="use-one-bat" type="checkbox">
-      <span title="By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required." class="tooltip">Use Extra Bases</span> <input id="use-defense" type="checkbox">
+      <span class="tip">Fill Lineup with First Batter
+        <span class="tooltip-text">Check this if you want to use the same batter 9 times.</span>
+      </span><input id="use-one-bat" class="checkbox" type="checkbox">
+      <span class="tip">Use Extra Bases <em>(Experimental Feature)</em>
+        <span class="tooltip-text">By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required.</span>
+      </span><input id="use-defense" class="checkbox" type="checkbox">
       <button id="run-simulation" name="run" type="button" value="Run Simulation" disabled>Run Simulation</button>
     </div>
     <div class="results-before">
