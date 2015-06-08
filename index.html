@@ -11,7 +11,7 @@ layout: default
     {% endcapture %}
     {{ content | markdownify }}
   </div>
-    <div id="container"><form id="inputForm"> <!-- Use ajax instead of: action="" method="post" -->
+    <div id="container"><form id="inputForm" autocomplete="off"> <!-- Use ajax instead of: action="" method="post" -->
       <div class="togglebutton button-on" id="selectlistbutton"> Select from list </div>
       <div class="togglebutton"> Custom enter values </div>
       <div class="pitcher-input input1" style="display: none;">
@@ -402,10 +402,10 @@ layout: default
     <div class="run">
       <span class="tip">Fill Lineup with First Batter
         <span class="tooltip-text">Check this if you want to use the same batter 9 times.</span>
-      </span><input id="use-one-bat" class="checkbox" type="checkbox">
+      </span><input id="use-one-bat" class="checkbox" type="checkbox" autocomplete="off">
       <span class="tip">Use Extra Bases <em>(Experimental Feature)</em>
         <span class="tooltip-text">By default a Basic game is run - no extra bases. Check this to use Expert rules such as tagging on fly balls, double plays, etc. Batter speed and defensive values required.</span>
-      </span><input id="use-defense" class="checkbox" type="checkbox">
+      </span><input id="use-defense" class="checkbox" type="checkbox" autocomplete="off">
       <button id="run-simulation" name="run" type="button" value="Run Simulation" disabled>Run Simulation</button>
     </div>
     <div class="results-before">
