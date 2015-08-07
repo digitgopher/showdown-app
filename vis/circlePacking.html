@@ -29,9 +29,21 @@
 
 </style>
 <body>
+  <div> Parameter 1
+    <input type="radio" name="option1" value="ob" checked="checked" > OB <br>
+    <input type="radio" name="option1" value="sp"> Speed <br>
+  </div>
+  <div> Parameter 2
+  <input type="radio" name="option2" value="outs" checked="checked"> Outs <br>
+  <input type="radio" name="option2" value="pt"> Points <br>
+  </div>
+</body>
 <script src="d3.v3.min.js"></script>
 <script src="jquery-1.11.1.min.js"></script>
 <script>
+
+var hierarchy,
+    data;
 
 var margin = 20,
     diameter = 960;
@@ -87,26 +99,34 @@ d3.csv("batterExport.csv",
     };
   },
   function(error, root) {
-    theDisplay(computeData(root));
+    data = root;
+    theDisplay(computeData());
   }
 );
 
-function computeData(root){
+function computeData(){
+    hierarchy = data;
 
     var ob_element, outs_element, hr_element;
-    var ob_max = 0, ob_min = 10, outs_max = 0, outs_min = 10, hr_max = 0, hr_min = 10;
+//    var ob_max = 0, ob_min = 10, outs_max = 0, outs_min = 10, hr_max = 0, hr_min = 10;
     var newRoot, build;
     var batters = {"name": "batters", "children": []};
     
     // Get min and max of the values we are splitting up by
-    root.map(function(a){
-      if(a.ob > ob_max) ob_max = a.ob;
-      if(a.ob < ob_min) ob_min = a.ob;
-      if(a.outs > outs_max) outs_max = a.outs;
-      if(a.outs < outs_min) outs_min = a.outs;
-      if(a.hr > hr_max) hr_max = a.hr;
-      if(a.hr < hr_min) hr_min = a.hr;
-    });
+//    root.map(function(a){
+//      if(a.ob > ob_max) ob_max = a.ob;
+//      if(a.ob < ob_min) ob_min = a.ob;
+//      if(a.outs > outs_max) outs_max = a.outs;
+//      if(a.outs < outs_min) outs_min = a.outs;
+//      if(a.hr > hr_max) hr_max = a.hr;
+//      if(a.hr < hr_min) hr_min = a.hr;
+//    });
+    var v1 = $("[name='option1']:checked").val();
+    var v2 = $("[name='option2']:checked").val();
+    var extent1 = d3.extent(hierarchy, function(d) { return d[v1]; });
+    var extent2 = d3.extent(hierarchy, function(d) { return d[v2]; });
+    var extent3 = d3.extent(hierarchy, function(d) { return d["hr"]; });
+    
     //console.log(ob_max);console.log(ob_min);console.log(outs_max);console.log(outs_min);console.log(hr_max);console.log(hr_min);
     
     // Build the json
@@ -119,17 +139,17 @@ function computeData(root){
     // root.map function. The data structure would have to be pre-built, but then
     // each player could be pushed on to its appropriate place as they are found.
     
-    for(var i = ob_min; i <= ob_max; i++){
+    for(var i = extent1[0]; i <= extent1[1]; i++){
       ob_element = {"ob": i, "children": []};
-      for(var j = outs_min; j <= outs_max; j++){
+      for(var j = extent2[0]; j <= extent2[1]; j++){
         outs_element = {"outs": j, "children": []};
-        for(var k = hr_min; k <= hr_max; k++){
+        for(var k = extent3[0]; k <= extent3[1]; k++){
           hr_element = {"hr": k, "children": []};
           
           found = [];
           newRoot = [];
-          root.map(function(val){
-            if(val.ob == i && val.outs == j && val.hr == k){
+          hierarchy.map(function(val){
+            if(val[v1] == i && val[v2] == j && val["hr"] == k){
               found.push(val);
             }
             else newRoot.push(val);
@@ -142,7 +162,7 @@ function computeData(root){
           
           if(hr_element.children.length > 0) outs_element.children.push(hr_element);
            
-          root = newRoot;
+          hierarchy = newRoot;
           
         }
         
@@ -156,12 +176,16 @@ function computeData(root){
     // The results!
     //$(".d").html('<pre>'+JSON.stringify(batters, null, '  ')+'</pre>');
 
-  return batters;
+  //return batters;
+  hierarchy = batters;
 }
 
-function theDisplay(root){
+function theDisplay(){
 
-  var focus = root,
+  $("svg>g").empty();
+
+  var root = hierarchy,
+      focus = root,
       nodes = pack.nodes(root),
       view;
 
@@ -179,7 +203,7 @@ function theDisplay(root){
       .attr("class", "label")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.ob; });
+      .text(function(d) { return d.pt; });
 
   var node = svg.selectAll("circle,text");
 
@@ -273,6 +297,11 @@ $(window).on("resize", function() {
       chart.attr("height", Math.round(targetWidth / aspect));
     }
 }).trigger("resize");
+
+// Change data from user input!
+$(":radio[name*='option']").change(function(){
+  theDisplay(computeData());
+});
 
 </script>
 
