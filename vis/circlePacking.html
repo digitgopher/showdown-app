@@ -120,7 +120,7 @@ Take raw csv data and transform it into a json hierarchy based on given sort val
 function computeHierarchy(){
   hierarchy = data;
 
-  var ob_element, outs_element, newRoot, build;
+  var element1, element2, newRoot, build;
   var batters = {"name": "batters", "children": []};
   
   // Obtain selected attributes' max/min values.
@@ -134,9 +134,9 @@ function computeHierarchy(){
   // Also note that with points, we can skip every 10 values.
   
   for(var i = extent1[0]; i <= extent1[1]; curVal1 == "pt" ? i+=10 : i++){ // constant time
-    ob_element = {"ob": i, "children": []};
+    element1 = {[curVal1]: i, "children": []};
     for(var j = extent2[0]; j <= extent2[1]; curVal2 == "pt" ? j+=10 : j++){ // constant time
-      outs_element = {"outs": j, "children": []};
+      element2 = {[curVal2]: j, "children": []};
       
       found = [];
       newRoot = [];
@@ -149,15 +149,15 @@ function computeHierarchy(){
       
       // add each found item
       found.map(function(val){ // O(n)
-        outs_element.children.push(val);
+        element2.children.push(val);
       });
       
       hierarchy = newRoot;
       
-      if(outs_element.children.length > 0) ob_element.children.push(outs_element);
+      if(element2.children.length > 0) element1.children.push(element2);
     }
     
-    batters.children.push(ob_element);
+    batters.children.push(element1);
   }
   // The results!
   //$(".d").html('<pre>'+JSON.stringify(batters, null, '  ')+'</pre>');
@@ -172,17 +172,16 @@ function theDisplay(){
 
   $("svg > g").empty();
 
-  var root = hierarchy,
-      focus = root,
-      nodes = pack.nodes(root),
-      view;
+  var root = hierarchy;
+  var focus = root;
+  var nodes = pack.nodes(root);
+  var view;
 
   var circle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
       .attr("class", getClass)
       .style("fill", function(d) { return d.children ? circleColor(d.depth) : cardColor(d[curVal3]); })
-      .style("display", visibility)
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 
   var text = svg.selectAll("text")
@@ -232,22 +231,12 @@ function appropriateName(circle){
   return "";
 }
 
-function visibility(d) {
-  if(false || (d.children && d.ob)) return null;
-  return null;
-}
-
-function getClass(d) {
-  if(d.parent){
-    if(d.children){
-      if(d.ob) return "node ob";
-      else if(d.outs) return "node outs";
-      else if(d.hr) return "node hr";
-      else return "node";
-    }
-    else return "node node--leaf";
-  }
-  return "node node--root";
+function getClass(circle) {
+  if(!circle.parent) return "node node--root";
+  if(circle.depth == 1) return "node node--1";
+  if(circle.depth == 2) return "node node--2";
+  if(circle.hasOwnProperty("nm")) return "node node--leaf";
+  return "";
 }
 
 function getNumChildLeaves(node) {
