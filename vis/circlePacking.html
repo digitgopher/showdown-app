@@ -66,6 +66,7 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return getNumChildLeaves(d); })
 
+// Add the svg canvas
 var svg = d3.select("body").append("svg")
     .attr("viewBox","0 0 960 960")
     .attr("perserveAspectRatio","xMinYMid")
@@ -188,7 +189,6 @@ function theDisplay(){
       .data(nodes)
     .enter().append("text")
       .attr("class", "label")
-      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? null : "none"; })
       .text(function(d) { return appropriateName(d); });
 
@@ -226,8 +226,8 @@ function theDisplay(){
 }
 
 function appropriateName(circle){
-  if(circle.children && circle.children.children) return circle[curVal1]; // First level circle
-  if(circle.children) {console.log(circle); return circle[curVal2];} // Second level circle
+  if(circle.depth == 1) return circle[curVal1]; // First level circle
+  if(circle.depth == 2) return circle[curVal2]; // Second level circle
   if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
   return "";
 }
@@ -285,7 +285,8 @@ $(window).on("resize", function() {
 $(":radio[name*='option']").change(function(){
   curVal1 = $("[name='option1']:checked").val();
   curVal2 = $("[name='option2']:checked").val();
-  theDisplay(computeHierarchy());
+  computeHierarchy();
+  theDisplay();
 });
 
 
