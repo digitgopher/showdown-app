@@ -35,8 +35,12 @@
     <input type="radio" name="option1" value="sp"> Speed <br>
   </div>
   <div> Parameter 2
-  <input type="radio" name="option2" value="outs" checked="checked"> Outs <br>
-  <input type="radio" name="option2" value="pt"> Points <br>
+    <input type="radio" name="option2" value="outs" checked="checked"> Outs <br>
+    <input type="radio" name="option2" value="pt"> Points <br>
+  </div>
+  <div> Parameter 3
+    <input type="radio" name="coloring" value="ob" checked="checked"> OBP <br>
+    <input type="radio" name="coloring" value="slg"> SLG <br>
   </div>
 </body>
 <script src="d3.v3.min.js"></script>
@@ -45,9 +49,11 @@
 
 var hierarchy,
     data,
-    curVal1 = "ob",
-    curVal2 = "outs",
-    curVal3 = "ob";
+    masterCircle,
+    text,
+    curVal1 = $("[name='option1']:checked").val(),
+    curVal2 = $("[name='option2']:checked").val(),
+    curVal3 = $("[name='coloring']:checked").val();
 
 var margin = 20,
     diameter = 960;
@@ -177,29 +183,50 @@ function theDisplay(){
   var nodes = pack.nodes(root);
   var view;
 
-  var circle = svg.selectAll("circle")
+  updateCircles(nodes);
+
+  updateText(nodes, root);
+
+  d3.select("body")
+    .on("click", function() { zoom(root); });
+
+  zoomTo([root.x, root.y, root.r * 2 + margin]);
+}
+
+function updateCircles(nodes){
+  masterCircle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
       .attr("class", getClass)
       .style("fill", function(d) { return d.children ? circleColor(d.depth) : cardColor(d[curVal3]); })
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+}
 
-  var text = svg.selectAll("text")
+function updateText(nodes, root){
+  text = svg.selectAll("text")
       .data(nodes)
     .enter().append("text")
       .attr("class", "label")
       .style("display", function(d) { return d.parent === root ? null : "none"; })
       .text(function(d) { return appropriateName(d); });
+}
+    
+function appropriateName(circle){
+  if(circle.depth == 1) return circle[curVal1]; // First level circle
+  if(circle.depth == 2) return circle[curVal2]; // Second level circle
+  if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
+  return "";
+}
 
-  var node = svg.selectAll("circle,text");
+function getClass(circle) {
+  if(!circle.parent) return "node node--root";
+  if(circle.depth == 1) return "node node--1";
+  if(circle.depth == 2) return "node node--2";
+  if(circle.hasOwnProperty("nm")) return "node node--leaf";
+  return "";
+}
 
-  d3.select("body")
-    //.style("background", circleColor(-1))
-    .on("click", function() { zoom(root); });
-
-  zoomTo([root.x, root.y, root.r * 2 + margin]);
-
-  function zoom(d) {
+function zoom(d) {
     var focus0 = focus; focus = d;
 
     var transition = d3.transition()
@@ -217,27 +244,12 @@ function theDisplay(){
   }
 
   function zoomTo(v) {
+  var node = svg.selectAll("circle,text");
     var k = diameter / v[2]; view = v;
     node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-    circle.attr("r", function(d) { return d.r * k; });
+    masterCircle.attr("r", function(d) { return d.r * k; });
     //node.style("display", null );
   }
-}
-
-function appropriateName(circle){
-  if(circle.depth == 1) return circle[curVal1]; // First level circle
-  if(circle.depth == 2) return circle[curVal2]; // Second level circle
-  if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
-  return "";
-}
-
-function getClass(circle) {
-  if(!circle.parent) return "node node--root";
-  if(circle.depth == 1) return "node node--1";
-  if(circle.depth == 2) return "node node--2";
-  if(circle.hasOwnProperty("nm")) return "node node--leaf";
-  return "";
-}
 
 function getNumChildLeaves(node) {
   var i = 0;
