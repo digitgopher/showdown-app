@@ -99,84 +99,71 @@ d3.csv("batterExport.csv",
     };
   },
   function(error, root) {
-    data = root;
-    theDisplay(computeData());
+    data = root; // data set and doesn't change.
+    computeHierarchy();
+    theDisplay();
   }
 );
 
-function computeData(){
-    hierarchy = data;
+/*
+Take raw csv data and transform it into a json hierarchy based on given sort values.
+*/
+function computeHierarchy(){
+  hierarchy = data;
 
-    var ob_element, outs_element;
-//    var ob_max = 0, ob_min = 10, outs_max = 0, outs_min = 10, hr_max = 0, hr_min = 10;
-    var newRoot, build;
-    var batters = {"name": "batters", "children": []};
-    
-    // Get min and max of the values we are splitting up by
-//    root.map(function(a){
-//      if(a.ob > ob_max) ob_max = a.ob;
-//      if(a.ob < ob_min) ob_min = a.ob;
-//      if(a.outs > outs_max) outs_max = a.outs;
-//      if(a.outs < outs_min) outs_min = a.outs;
-//      if(a.hr > hr_max) hr_max = a.hr;
-//      if(a.hr < hr_min) hr_min = a.hr;
-//    });
-    var v1 = $("[name='option1']:checked").val();
-    var v2 = $("[name='option2']:checked").val();
-    var extent1 = d3.extent(hierarchy, function(d) { return d[v1]; });
-    var extent2 = d3.extent(hierarchy, function(d) { return d[v2]; });
-    
-    //console.log(ob_max);console.log(ob_min);console.log(outs_max);console.log(outs_min);console.log(hr_max);console.log(hr_min);
-    
-    // Build the json
-    //
-    // Notes on the algorithm:
-    // Using newRoot (taking out the found values) gives O(n^2). 
-    // Using root (not taking out any values as we go) gives O(n!).
-    //
-    // We *could* get O(n) by putting the nested for-constant loops INSIDE the
-    // root.map function. The data structure would have to be pre-built, but then
-    // each player could be pushed on to its appropriate place as they are found.
-    
-    for(var i = extent1[0]; i <= extent1[1]; i++){
-      ob_element = {"ob": i, "children": []};
-      for(var j = extent2[0]; j <= extent2[1]; j++){
-        outs_element = {"outs": j, "children": []};
-        
-        found = [];
-        newRoot = [];
-        hierarchy.map(function(val){
-          if(val[v1] == i && val[v2] == j){
-            found.push(val);
-          }
-          else newRoot.push(val);
-        });
-        
-        // add each found item
-        found.map(function(val){
-          outs_element.children.push(val);
-        });
-        
-        
-        hierarchy = newRoot;
-        
-        if(outs_element.children.length > 0) ob_element.children.push(outs_element);
-        
-      }
+  var ob_element, outs_element, newRoot, build;
+  var batters = {"name": "batters", "children": []};
+  
+  // Obtain selected attributes and their max/min values.
+  var v1 = $("[name='option1']:checked").val();
+  var v2 = $("[name='option2']:checked").val();
+  var extent1 = d3.extent(hierarchy, function(d) { return d[v1]; });
+  var extent2 = d3.extent(hierarchy, function(d) { return d[v2]; });
+  
+  // Build the data json
+  //
+  // Algorithm time:
+  // const * const * 2 * O(n)
+  // Also note that with points, we can skip every 10 values.
+  
+  for(var i = extent1[0]; i <= extent1[1]; v1 == "pt" ? i+=10 : i++){ // constant time
+    ob_element = {"ob": i, "children": []};
+    for(var j = extent2[0]; j <= extent2[1]; v2 == "pt" ? j+=10 : j++){ // constant time
+      outs_element = {"outs": j, "children": []};
       
-      batters.children.push(ob_element);
+      found = [];
+      newRoot = [];
+      hierarchy.map(function(val){ // O(n)
+        if(val[v1] == i && val[v2] == j){
+          found.push(val);
+        }
+        else newRoot.push(val);
+      });
       
+      // add each found item
+      found.map(function(val){ // O(n)
+        outs_element.children.push(val);
+      });
+      
+      hierarchy = newRoot;
+      
+      if(outs_element.children.length > 0) ob_element.children.push(outs_element);
     }
-    // The results!
-    //$(".d").html('<pre>'+JSON.stringify(batters, null, '  ')+'</pre>');
+    
+    batters.children.push(ob_element);
+  }
+  // The results!
+  //$(".d").html('<pre>'+JSON.stringify(batters, null, '  ')+'</pre>');
 
-  //return batters;
   hierarchy = batters;
 }
 
+/*
+All the D3 magic to render the data.
+*/
 function theDisplay(){
 
-  $("svg>g").empty();
+  $("svg > g").empty();
 
   var root = hierarchy,
       focus = root,
@@ -246,7 +233,6 @@ function visibility(d) {
   return null;
 }
 
-
 function getClass(d) {
   if(d.parent){
     if(d.children){
@@ -259,8 +245,7 @@ function getClass(d) {
   }
   return "node node--root";
 }
-      
-      
+
 function getNumChildLeaves(node) {
   var i = 0;
   function recurse(node) {
@@ -294,7 +279,7 @@ $(window).on("resize", function() {
 
 // Change data from user input!
 $(":radio[name*='option']").change(function(){
-  theDisplay(computeData());
+  theDisplay(computeHierarchy());
 });
 
 </script>
