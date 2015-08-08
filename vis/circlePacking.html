@@ -39,8 +39,8 @@
     <input type="radio" name="option2" value="pt"> Points <br>
   </div>
   <div> Parameter 3
-    <input type="radio" name="coloring" value="ob" checked="checked"> OBP <br>
-    <input type="radio" name="coloring" value="slg"> SLG <br>
+    <input type="radio" name="coloring" value="ob" checked="checked"> OB <br>
+    <input type="radio" name="coloring" value="sp"> Speed <br>
   </div>
 </body>
 <script src="d3.v3.min.js"></script>
@@ -54,7 +54,15 @@ var hierarchy,
     text,
     curVal1 = $("[name='option1']:checked").val(),
     curVal2 = $("[name='option2']:checked").val(),
-    curVal3 = $("[name='coloring']:checked").val();
+    curVal3 = $("[name='coloring']:checked").val(),
+    colorBins = ["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"];
+    
+var domains = {
+  "ob": [4, 11],
+  "sp": [8,23],
+  "outs": [2, 8],
+  "bb": [0, 14]
+}
 
 var margin = 20,
     diameter = 960;
@@ -65,8 +73,8 @@ var circleColor = d3.scale./*category10();*/linear()
     .interpolate(d3.interpolateHcl);
     
 var cardColor = d3.scale.quantize()
-    .domain([4, 11])
-    .range(["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"]);
+    .domain(domains[curVal3])
+    .range(colorBins);
 
 var pack = d3.layout.pack()
     .padding(2)
@@ -174,17 +182,13 @@ function computeHierarchy(){
 
 function theDisplay(){
 
-  $("svg > g").empty();
-
   var root = hierarchy;
   var focus = root;
   var view; // magic
 
   rePack();
-
-  updateCircles(nodes);
-
-  updateText(nodes, root);
+  updateCircles();
+  updateText();
 
   d3.select("body")
     .on("click", function() { zoom(root); });
@@ -192,11 +196,15 @@ function theDisplay(){
   zoomTo([root.x, root.y, root.r * 2 + margin]);
 }
 
+function reset(){
+  $("svg > g").empty();
+}
+
 function rePack(){
   nodes = pack.nodes(hierarchy);
 }
 
-function updateCircles(nodes){
+function updateCircles(){
   masterCircle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
@@ -205,12 +213,12 @@ function updateCircles(nodes){
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 }
 
-function updateText(nodes, root){
+function updateText(){
   text = svg.selectAll("text")
       .data(nodes)
     .enter().append("text")
       .attr("class", "label")
-      .style("display", function(d) { return d.parent === root ? null : "none"; })
+      .style("display", function(d) { return d.parent === hierarchy ? null : "none"; })
       .text(function(d) { return appropriateName(d); });
 }
     
@@ -272,7 +280,6 @@ function getNumChildLeaves(node) {
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
-
 // Make responsive!
 var chart = $(".bubbleFrame"),
     aspect = chart.width() / chart.height(),
@@ -285,12 +292,24 @@ $(window).on("resize", function() {
     }
 }).trigger("resize");
 
-// Change data from user input!
+// Change data from user input.
 $(":radio[name*='option']").change(function(){
   curVal1 = $("[name='option1']:checked").val();
   curVal2 = $("[name='option2']:checked").val();
   computeHierarchy();
-  theDisplay();
+  reset();
+  rePack();
+  updateCircles();
+  updateText();
+});
+
+// Change coloring attribute from user input.
+$(":radio[name='coloring']").change(function(){
+  curVal3 = $("[name='coloring']:checked").val();
+  cardColor.domain(domains[curVal3]);
+  reset();
+  updateCircles();
+  updateText();
 });
 
 
