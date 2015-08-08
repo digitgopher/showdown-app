@@ -16,7 +16,8 @@
 }
 
 .label {
-  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 30px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
 }
@@ -43,7 +44,9 @@
 <script>
 
 var hierarchy,
-    data;
+    data,
+    curVal1 = "ob",
+    curVal2 = "outs";
 
 var margin = 20,
     diameter = 960;
@@ -114,11 +117,9 @@ function computeHierarchy(){
   var ob_element, outs_element, newRoot, build;
   var batters = {"name": "batters", "children": []};
   
-  // Obtain selected attributes and their max/min values.
-  var v1 = $("[name='option1']:checked").val();
-  var v2 = $("[name='option2']:checked").val();
-  var extent1 = d3.extent(hierarchy, function(d) { return d[v1]; });
-  var extent2 = d3.extent(hierarchy, function(d) { return d[v2]; });
+  // Obtain selected attributes' max/min values.
+  var extent1 = d3.extent(hierarchy, function(d) { return d[curVal1]; });
+  var extent2 = d3.extent(hierarchy, function(d) { return d[curVal2]; });
   
   // Build the data json
   //
@@ -126,15 +127,15 @@ function computeHierarchy(){
   // const * const * 2 * O(n)
   // Also note that with points, we can skip every 10 values.
   
-  for(var i = extent1[0]; i <= extent1[1]; v1 == "pt" ? i+=10 : i++){ // constant time
+  for(var i = extent1[0]; i <= extent1[1]; curVal1 == "pt" ? i+=10 : i++){ // constant time
     ob_element = {"ob": i, "children": []};
-    for(var j = extent2[0]; j <= extent2[1]; v2 == "pt" ? j+=10 : j++){ // constant time
+    for(var j = extent2[0]; j <= extent2[1]; curVal2 == "pt" ? j+=10 : j++){ // constant time
       outs_element = {"outs": j, "children": []};
       
       found = [];
       newRoot = [];
       hierarchy.map(function(val){ // O(n)
-        if(val[v1] == i && val[v2] == j){
+        if(val[curVal1] == i && val[curVal2] == j){
           found.push(val);
         }
         else newRoot.push(val);
@@ -184,13 +185,13 @@ function theDisplay(){
       .attr("class", "label")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? null : "none"; })
-      .text(function(d) { return d.pt; });
+      .text(function(d) { return appropriateName(d); });
 
   var node = svg.selectAll("circle,text");
 
   d3.select("body")
-      //.style("background", color(-1))
-      .on("click", function() { zoom(root); });
+    //.style("background", color(-1))
+    .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
 
@@ -206,18 +207,9 @@ function theDisplay(){
 
     transition.selectAll("text")
       .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        
-        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
-        
-    /*transition.selectAll("display")
-      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        
-        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });*/
+      .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+      .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+      .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
   }
 
   function zoomTo(v) {
@@ -226,6 +218,13 @@ function theDisplay(){
     circle.attr("r", function(d) { return d.r * k; });
     //node.style("display", null );
   }
+}
+
+function appropriateName(circle){
+  if(circle.children && circle.children.children) return circle[curVal1]; // First level circle
+  if(circle.children) return circle[curVal2]; // Second level circle
+  if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
+  return "";
 }
 
 function visibility(d) {
@@ -279,8 +278,11 @@ $(window).on("resize", function() {
 
 // Change data from user input!
 $(":radio[name*='option']").change(function(){
+  curVal1 = $("[name='option1']:checked").val();
+  curVal2 = $("[name='option2']:checked").val();
   theDisplay(computeHierarchy());
 });
+
 
 </script>
 
