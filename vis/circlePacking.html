@@ -79,7 +79,9 @@ var cardColor = d3.scale.quantize()
 var pack = d3.layout.pack()
     .padding(2)
     .size([diameter - margin, diameter - margin])
-    .value(function(d) { return getNumChildLeaves(d); })
+    //.sort(function(a,b) { return a.value - b.value; })
+    // Not using size as a dimension right now
+    .value(function(d) { return d.hasOwnProperty("bb") ? 1 : 1; })
 
 // Add the svg canvas
 var svg = d3.select("body").append("svg")
@@ -265,15 +267,8 @@ function zoomTo(v) {
 function getNumChildLeaves(node) {
   var i = 0;
   function recurse(node) {
-    if(node.children){
-      node.children.forEach(function(child) { recurse(child); });
-    }
-    else{
-      // it's a leaf!
-      i++;
-    }
+    node.children ? node.children.forEach(function(child) { recurse(child); }) : i++; // increment when a leaf!
   }
-
   recurse(node);
   return i;
 }
