@@ -48,10 +48,10 @@ var hierarchy,
 var margin = 20,
     diameter = 960;
 
-var color = d3.scale.category10();//linear()
-    //.domain([-1, 5])
-    //.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-    //.interpolate(d3.interpolateHcl);
+var color = d3.scale./*category10();*/linear()
+    .domain([-1, 5])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    .interpolate(d3.interpolateHcl);
 
 var pack = d3.layout.pack()
     .padding(2)
@@ -107,7 +107,7 @@ d3.csv("batterExport.csv",
 function computeData(){
     hierarchy = data;
 
-    var ob_element, outs_element, hr_element;
+    var ob_element, outs_element;
 //    var ob_max = 0, ob_min = 10, outs_max = 0, outs_min = 10, hr_max = 0, hr_min = 10;
     var newRoot, build;
     var batters = {"name": "batters", "children": []};
@@ -125,7 +125,6 @@ function computeData(){
     var v2 = $("[name='option2']:checked").val();
     var extent1 = d3.extent(hierarchy, function(d) { return d[v1]; });
     var extent2 = d3.extent(hierarchy, function(d) { return d[v2]; });
-    var extent3 = d3.extent(hierarchy, function(d) { return d["hr"]; });
     
     //console.log(ob_max);console.log(ob_min);console.log(outs_max);console.log(outs_min);console.log(hr_max);console.log(hr_min);
     
@@ -143,31 +142,26 @@ function computeData(){
       ob_element = {"ob": i, "children": []};
       for(var j = extent2[0]; j <= extent2[1]; j++){
         outs_element = {"outs": j, "children": []};
-        for(var k = extent3[0]; k <= extent3[1]; k++){
-          hr_element = {"hr": k, "children": []};
-          
-          found = [];
-          newRoot = [];
-          hierarchy.map(function(val){
-            if(val[v1] == i && val[v2] == j && val["hr"] == k){
-              found.push(val);
-            }
-            else newRoot.push(val);
-          });
-          
-          // add each found item
-          found.map(function(val){
-            hr_element.children.push(val);
-          });
-          
-          if(hr_element.children.length > 0) outs_element.children.push(hr_element);
-           
-          hierarchy = newRoot;
-          
-        }
+        
+        found = [];
+        newRoot = [];
+        hierarchy.map(function(val){
+          if(val[v1] == i && val[v2] == j){
+            found.push(val);
+          }
+          else newRoot.push(val);
+        });
+        
+        // add each found item
+        found.map(function(val){
+          outs_element.children.push(val);
+        });
+        
+        
+        hierarchy = newRoot;
         
         if(outs_element.children.length > 0) ob_element.children.push(outs_element);
-      
+        
       }
       
       batters.children.push(ob_element);
@@ -208,7 +202,7 @@ function theDisplay(){
   var node = svg.selectAll("circle,text");
 
   d3.select("body")
-      .style("background", color(-1))
+      //.style("background", color(-1))
       .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
