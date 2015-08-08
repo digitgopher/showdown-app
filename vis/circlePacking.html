@@ -46,15 +46,20 @@
 var hierarchy,
     data,
     curVal1 = "ob",
-    curVal2 = "outs";
+    curVal2 = "outs",
+    curVal3 = "ob";
 
 var margin = 20,
     diameter = 960;
 
-var color = d3.scale./*category10();*/linear()
+var circleColor = d3.scale./*category10();*/linear()
     .domain([-1, 5])
     .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     .interpolate(d3.interpolateHcl);
+    
+var cardColor = d3.scale.quantize()
+    .domain([4, 11])
+    .range(["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"]);
 
 var pack = d3.layout.pack()
     .padding(2)
@@ -175,7 +180,7 @@ function theDisplay(){
       .data(nodes)
     .enter().append("circle")
       .attr("class", getClass)
-      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+      .style("fill", function(d) { return d.children ? circleColor(d.depth) : cardColor(d[curVal3]); })
       .style("display", visibility)
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 
@@ -190,7 +195,7 @@ function theDisplay(){
   var node = svg.selectAll("circle,text");
 
   d3.select("body")
-    //.style("background", color(-1))
+    //.style("background", circleColor(-1))
     .on("click", function() { zoom(root); });
 
   zoomTo([root.x, root.y, root.r * 2 + margin]);
@@ -222,7 +227,7 @@ function theDisplay(){
 
 function appropriateName(circle){
   if(circle.children && circle.children.children) return circle[curVal1]; // First level circle
-  if(circle.children) return circle[curVal2]; // Second level circle
+  if(circle.children) {console.log(circle); return circle[curVal2];} // Second level circle
   if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
   return "";
 }
