@@ -35,19 +35,88 @@
   height: 20px;
 }
 
+.outer {
+  float: left;
+}
+
 </style>
 <body>
-  <div> First Parameter
-    <input type="radio" name="option1" value="ob" checked="checked" > OB <br>
-    <input type="radio" name="option1" value="sp"> Speed <br>
+  <div> Data
+    <input type="radio" name="dataset" value="b" checked="checked" > Batters <br>
+    <input type="radio" name="dataset" value="p"> Pitchers <br>
   </div>
-  <div> Second Parameter
-    <input type="radio" name="option2" value="outs" checked="checked"> Outs <br>
-    <input type="radio" name="option2" value="pt"> Points <br>
+  <div class="outer">
+  Attribute
+  <div>
+    <div>On-base</div>
+    <div>Control</div>
+    <div>Total out results</div>
+    <div>PU results</div>
+    <div>SO results</div>
+    <div>GB results</div>
+    <div>FB results</div>
+    <div>BB results</div>
+    <div>1B results</div>
+    <div>1B+ results</div>
+    <div>2B results</div>
+    <div>3B results</div>
+    <div>HR results</div>
+    <div>Points</div>
+    <div>IP</div>
+    <div>Speed</div>
+    <div>Hand</div>
+    <div>Team</div>
+  </div>
+  </div>
+  <div class="outer">
+  Primary
+  <div> 
+    <input type="radio" name="option1" value="ob" class="bat default" checked="checked" > <br>
+    <input type="radio" name="option1" value="c" class="pit" > <br>
+    <input type="radio" name="option1" value="outs"> <br>
+    <input type="radio" name="option1" value="pu" class="pit" > <br>
+    <input type="radio" name="option1" value="so"> <br>
+    <input type="radio" name="option1" value="gb"> <br>
+    <input type="radio" name="option1" value="fb"> <br>
+    <input type="radio" name="option1" value="bb"> <br>
+    <input type="radio" name="option1" value="b1"><br>
+    <input type="radio" name="option1" value="b1p" class="bat" > <br>
+    <input type="radio" name="option1" value="b2"> <br>
+    <input type="radio" name="option1" value="b3" class="bat" > <br>
+    <input type="radio" name="option1" value="hr"> <br>
+    <input type="radio" name="option1" value="pt"> <br>
+    <input type="radio" name="option1" value="ip" class="pit" > <br>
+    <input type="radio" name="option1" value="sp" class="bat" > <br>
+    <input type="radio" name="option1" value="hd"> <br>
+    <input type="radio" name="option1" value="tm"> <br>
+  </div>
+  </div>
+  <div class="outer">
+  Secondary
+  <div> 
+    <input type="radio" name="option2" value="ob" class="bat"> <br>
+    <input type="radio" name="option2" value="c" class="pit" > <br>
+    <input type="radio" name="option2" value="outs default"  checked="checked"> <br>
+    <input type="radio" name="option2" value="pu" class="pit" > <br>
+    <input type="radio" name="option2" value="so"> <br>
+    <input type="radio" name="option2" value="gb"> <br>
+    <input type="radio" name="option2" value="fb"> <br>
+    <input type="radio" name="option2" value="bb"> <br>
+    <input type="radio" name="option2" value="b1"> <br>
+    <input type="radio" name="option2" value="b1p" class="bat" > <br>
+    <input type="radio" name="option2" value="b2"> <br>
+    <input type="radio" name="option2" value="b3" class="bat" > <br>
+    <input type="radio" name="option2" value="hr"> <br>
+    <input type="radio" name="option2" value="pt"> <br>
+    <input type="radio" name="option2" value="ip" class="pit" > <br>
+    <input type="radio" name="option2" value="sp" class="bat" > <br>
+    <input type="radio" name="option2" value="hd"> <br>
+    <input type="radio" name="option2" value="tm"> <br>
+  </div>
   </div>
   <div> Color Attribute
-    <input type="radio" name="coloring" value="ob" checked="checked"> OB <br>
-    <input type="radio" name="coloring" value="sp"> Speed <br>
+    <input type="radio" name="coloring" value="bb" checked="checked"> OB <br>
+    <input type="radio" name="coloring" value="outs"> Speed <br>
   </div>
   <div> Years
     <input type="checkbox" name="years" value="2000" checked="checked"> 2000 <br>
@@ -59,12 +128,12 @@
     <input type="checkbox" name="years" value="2012" checked="checked"> 2012 <br>
   </div>
   <div id="legend-color-boxes">
-    <div id="lcb1" style="background:#ffffb2"></div>
-    <div id="lcb2" style="background:#fed976"></div>
-    <div id="lcb3" style="background:#feb24c"></div>
-    <div id="lcb4" style="background:#fd8d3c"></div>
-    <div id="lcb5" style="background:#f03b20"></div>
-    <div id="lcb6" style="background:#bd0026"></div>
+    <div id="lcb1" style="background:#bd0026"></div>
+    <div id="lcb2" style="background:#f03b20"></div>
+    <div id="lcb3" style="background:#fd8d3c"></div>
+    <div id="lcb4" style="background:#feb24c"></div>
+    <div id="lcb5" style="background:#fed976"></div>
+    <div id="lcb6" style="background:#ffffb2"></div>
   </div>​
 </body>
 <script src="d3.v3.min.js"></script>
@@ -72,7 +141,8 @@
 <script>
 
 var hierarchy,
-    data,
+    bData,
+    pData,
     nodes,
     masterCircle,
     text,
@@ -121,6 +191,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
+// Initialize batter data
 d3.csv("batters.csv",
   function(d) {
     return {
@@ -154,16 +225,48 @@ d3.csv("batters.csv",
     };
   },
   function(error, root) {
-    data = root; // data set and doesn't change.
+    bData = root; // data set and doesn't change.
     computeHierarchy();
     theDisplay();
+  }
+);
+
+// Initialize pitcher data
+d3.csv("pitchers.csv",
+  function(d) {
+    return {
+      nm: d.Name,
+      yr: d.year,
+      st: d.set,
+      cn: +d.cardNo, // + converts to number
+      tm: d.team,
+      c: +d.control,
+      pu: +d.pu,
+      so: +d.so,
+      gb: +d.gb,
+      fb: +d.fb,
+      outs: +d.pu + +d.so + +d.gb + +d.fb,
+      bb: +d.bb,
+      b1: +d.b1,
+      b2: +d.b2,
+      hr: +d.hr,
+      pt: +d.pts,
+      ip: +d.ip,
+      hd: d.hand,
+      pos: d.pos
+    };
+  },
+  function(error, root) {
+    pData = root; // data set and doesn't change.
   }
 );
 
 /*
 Take raw csv data and transform it into a json hierarchy based on given sort values.
 */
-function computeHierarchy(){
+function computeHierarchy(){console.log(bData);
+  var dataset = $("[name='dataset']:checked").val()
+  var data = dataset == "b" ? bData : pData;
   hierarchy = data.filter(function(d) { return selectedYears.indexOf(d.yr) > -1});
 
   var element1, element2, newRoot, build;
@@ -352,5 +455,14 @@ $("input:checkbox[name=years]").change(function(){
   rePack();
   updateDisplay();
 });
+
+// Change dataset visualized
+$(":radio[name='dataset']").change(function(){
+  computeHierarchy();
+  reset();
+  rePack();
+  updateDisplay();
+});
+
 
 </script>
