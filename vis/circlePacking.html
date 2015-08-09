@@ -29,6 +29,12 @@
   pointer-events: none;
 }
 
+#legend-color-boxes div {
+  float: right;
+  width: 20px;
+  height: 20px;
+}
+
 </style>
 <body>
   <div> First Parameter
@@ -52,6 +58,14 @@
     <input type="checkbox" name="years" value="2005"> 2005 <br>
     <input type="checkbox" name="years" value="2012" checked="checked"> 2012 <br>
   </div>
+  <div id="legend-color-boxes">
+    <div id="lcb1" style="background:#ffffb2"></div>
+    <div id="lcb2" style="background:#fed976"></div>
+    <div id="lcb3" style="background:#feb24c"></div>
+    <div id="lcb4" style="background:#fd8d3c"></div>
+    <div id="lcb5" style="background:#f03b20"></div>
+    <div id="lcb6" style="background:#bd0026"></div>
+  </div>​
 </body>
 <script src="d3.v3.min.js"></script>
 <script src="jquery-1.11.1.min.js"></script>
@@ -62,6 +76,7 @@ var hierarchy,
     nodes,
     masterCircle,
     text,
+    view, // magic. Actually set in zoomTo.
     curVal1 = $("[name='option1']:checked").val(),
     curVal2 = $("[name='option2']:checked").val(),
     curVal3 = $("[name='coloring']:checked").val(),
@@ -106,7 +121,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
-d3.csv("batterExport.csv",
+d3.csv("batters.csv",
   function(d) {
     return {
       nm: d.Name,
@@ -198,18 +213,13 @@ function computeHierarchy(){
 
 function theDisplay(){
 
-  var root = hierarchy;
-  var focus = root;
-  var view; // magic
-
   rePack();
-  updateCircles();
-  updateText();
+  updateDisplay();
 
   d3.select("body")
-    .on("click", function() { zoom(root); });
+    .on("click", function() { zoom(hierarchy); });
 
-  zoomTo([root.x, root.y, root.r * 2 + margin]);
+  zoomTo([hierarchy.x, hierarchy.y, hierarchy.r * 2 + margin]);
 }
 
 function reset(){
@@ -220,16 +230,14 @@ function rePack(){
   nodes = pack.nodes(hierarchy);
 }
 
-function updateCircles(){
+function updateDisplay(){
   masterCircle = svg.selectAll("circle")
       .data(nodes)
     .enter().append("circle")
       .attr("class", getClass)
       .style("fill", function(d) { return d.children ? circleColor(d.depth) : cardColor(d[curVal3]); })
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
-}
 
-function updateText(){
   text = svg.selectAll("text")
       .data(nodes)
     .enter().append("text")
@@ -303,6 +311,10 @@ $(window).on("resize", function() {
     }
 }).trigger("resize");
 
+function setLegend(){
+  
+}
+
 //*******************
 // Event handlers
 //*******************
@@ -314,8 +326,7 @@ $(":radio[name*='option']").change(function(){
   computeHierarchy();
   reset();
   rePack();
-  updateCircles();
-  updateText();
+  updateDisplay();
 });
 
 // Change coloring attribute from user input.
@@ -323,8 +334,7 @@ $(":radio[name='coloring']").change(function(){
   curVal3 = $("[name='coloring']:checked").val();
   cardColor.domain(domains[curVal3]);
   reset();
-  updateCircles();
-  updateText();
+  updateDisplay();
 });
 
 // Filter data from user input.
@@ -340,8 +350,7 @@ $("input:checkbox[name=years]").change(function(){
   computeHierarchy();
   reset();
   rePack();
-  updateCircles();
-  updateText();
+  updateDisplay();
 });
 
 </script>
