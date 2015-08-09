@@ -75,8 +75,8 @@
   <div>
   <span class="titleheading">Color Attribute</span>
   <div>
-    <input type="radio" name="coloring" value="bb" checked="checked"> BB <br>
-    <input type="radio" name="coloring" value="hr"> HR <br>
+    <input type="radio" name="coloring" value="obp" checked="checked"> OBP <br>
+    <input type="radio" name="coloring" value="slg"> SLG <br>
   </div>
   </div>
   <div>
@@ -121,15 +121,22 @@
     <input type="radio" name="option1" value="bOuts" class="bat">
     <input type="radio" name="option1" value="pOuts" class="pit">
     <input type="radio" name="option1" value="pu" class="pit">
-    <input type="radio" name="option1" value="so">
-    <input type="radio" name="option1" value="gb">
-    <input type="radio" name="option1" value="fb">
-    <input type="radio" name="option1" value="bb">
-    <input type="radio" name="option1" value="b1">
+    <input type="radio" name="option1" value="b_so" class="bat">
+    <input type="radio" name="option1" value="p_so" class="pit">
+    <input type="radio" name="option1" value="b_gb" class="bat">
+    <input type="radio" name="option1" value="p_gb" class="pit">
+    <input type="radio" name="option1" value="b_fb" class="bat">
+    <input type="radio" name="option1" value="p_fb" class="pit">
+    <input type="radio" name="option1" value="b_bb" class="bat">
+    <input type="radio" name="option1" value="p_bb" class="pit">
+    <input type="radio" name="option1" value="b_b1" class="bat">
+    <input type="radio" name="option1" value="p_b1" class="pit">
     <input type="radio" name="option1" value="b1p" class="bat">
-    <input type="radio" name="option1" value="b2">
+    <input type="radio" name="option1" value="b_b2" class="bat">
+    <input type="radio" name="option1" value="p_b2" class="pit">
     <input type="radio" name="option1" value="b3" class="bat">
-    <input type="radio" name="option1" value="hr">
+    <input type="radio" name="option1" value="b_hr" class="bat">
+    <input type="radio" name="option1" value="p_hr" class="pit">
     <input type="radio" name="option1" value="pt">
     <input type="radio" name="option1" value="ip" class="pit">
     <input type="radio" name="option1" value="sp" class="bat">
@@ -143,15 +150,22 @@
     <input type="radio" name="option2" value="bOuts" class="bat bat-default" checked="checked">
     <input type="radio" name="option2" value="pOuts" class="pit pit-default">
     <input type="radio" name="option2" value="pu" class="pit">
-    <input type="radio" name="option2" value="so">
-    <input type="radio" name="option2" value="gb">
-    <input type="radio" name="option2" value="fb">
-    <input type="radio" name="option2" value="bb">
-    <input type="radio" name="option2" value="b1">
+    <input type="radio" name="option2" value="b_so" class="bat">
+    <input type="radio" name="option2" value="p_so" class="pit">
+    <input type="radio" name="option2" value="b_gb" class="bat">
+    <input type="radio" name="option2" value="p_gb" class="pit">
+    <input type="radio" name="option2" value="b_fb" class="bat">
+    <input type="radio" name="option2" value="p_fb" class="pit">
+    <input type="radio" name="option2" value="b_bb" class="bat">
+    <input type="radio" name="option2" value="p_bb" class="pit">
+    <input type="radio" name="option2" value="b_b1" class="bat">
+    <input type="radio" name="option2" value="p_b1" class="pit">
     <input type="radio" name="option2" value="b1p" class="bat">
-    <input type="radio" name="option2" value="b2">
+    <input type="radio" name="option2" value="b_b2" class="bat">
+    <input type="radio" name="option2" value="p_b2" class="pit">
     <input type="radio" name="option2" value="b3" class="bat">
-    <input type="radio" name="option2" value="hr">
+    <input type="radio" name="option2" value="b_hr" class="bat">
+    <input type="radio" name="option2" value="p_hr" class="pit">
     <input type="radio" name="option2" value="pt">
     <input type="radio" name="option2" value="ip" class="pit">
     <input type="radio" name="option2" value="sp" class="bat">
@@ -185,20 +199,29 @@ var hierarchy,
     colorBins = ["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"];
     
 var domains = {
+  "obp": [.180, .480],
+  "slg": [.2, .6],
   "ob": [4, 11],
   "c": [0, 6],
   "bOuts": [1, 9],
   "pOuts": [11, 19],
   "pu": [0, 4],
-  "so": [0, 10],
-  "gb": [0, 10],
-  "fb": [0, 10],
-  "bb": [0, 10],
-  "b1": [0, 14],
+  "b_so": [0, 5],
+  "p_so": [0, 10],
+  "b_gb": [0, 5],
+  "p_gb": [0, 10],
+  "b_fb": [0, 5],
+  "p_fb": [0, 10],
+  "b_bb": [0, 10],
+  "p_bb": [0, 4],
+  "b_b1": [0, 14],
+  "p_b1": [0, 4],
   "b1p": [0, 4],
-  "b2": [0, 5],
+  "b_b2": [0, 5],
+  "p_b2": [0, 2],
   "b3": [0, 5],
-  "hr": [0, 5],
+  "b_hr": [0, 5],
+  "p_hr": [0, 2],
   "pt": [10, 700],
   "ip": [4, 9],
   "sp": [8,23]
@@ -242,9 +265,6 @@ var svg = d3.select("body").append("svg")
 // Initialize batter data
 d3.csv("batters.csv",
   function(d) {
-    if(+d.hr > 20) d.hr = "0"; // greater than 20 values shouldn't count
-    if(+d.b3 > 20) d.b3 = "0";
-    if(+d.b2 > 20) d.b2 = "0";
     return {
       nm: d.Name,
       yr: d.year,
@@ -252,16 +272,16 @@ d3.csv("batters.csv",
       cn: +d.cardNo, // + converts to number
       tm: d.team,
       ob: +d.onbase,
-      so: +d.so,
-      gb: +d.gb,
-      fb: +d.fb,
+      b_so: +d.so,
+      b_gb: +d.gb,
+      b_fb: +d.fb,
       bOuts: +d.so + +d.gb + +d.fb,
-      bb: +d.bb,
-      b1: +d.b1,
+      b_bb: +d.bb,
+      b_b1: +d.b1,
       b1p: +d.b1p,
-      b2: +d.b2,
-      b3: +d.b3,
-      hr: +d.hr,
+      b_b2: +d.b2 > 20 ? 0 : +d.b2,
+      b3: +d.b3 > 20 ? 0 : +d.b3,
+      b_hr: +d.hr > 20 ? 0 : +d.hr,
       pt: +d.pts,
       sp: +d.sp,
       hd: d.hand,
@@ -293,14 +313,14 @@ d3.csv("pitchers.csv",
       tm: d.team,
       c: +d.control,
       pu: +d.pu,
-      so: +d.so,
-      gb: +d.gb,
-      fb: +d.fb,
+      p_so: +d.so,
+      p_gb: +d.gb,
+      p_fb: +d.fb,
       pOuts: +d.pu + +d.so + +d.gb + +d.fb,
-      bb: +d.bb,
-      b1: +d.b1,
-      b2: +d.b2,
-      hr: +d.hr,
+      p_bb: +d.bb,
+      p_b1: +d.b1 > 20 ? 0 : +d.b1,
+      p_b2: +d.b2 > 20 ? 0 : +d.b2,
+      p_hr: +d.hr > 20 ? 0 : +d.hr,
       pt: +d.pts,
       ip: +d.ip,
       hd: d.hand,
