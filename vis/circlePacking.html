@@ -35,90 +35,53 @@
   height: 20px;
 }
 
-.outer {
+.g2, .g1{
   float: left;
+  margin: 2px;
+}
+
+.g2 input {
+  display: block;
+  height: 17px;
+}
+
+.g2 > div > div {
+  height: 20px;
+}
+
+.titleheading {
+  font-weight: bold;
+}
+
+#vis-controls {
+  border: 2px solid black;
+}
+
+.clear {
+  clear: both;
 }
 
 </style>
 <body>
-  <div> Data
+  <div id="vis-controls">
+  <div class="g1">
+  <div>
+  <span class="titleheading">Data</span>
+  <div>
     <input type="radio" name="dataset" value="b" checked="checked" > Batters <br>
     <input type="radio" name="dataset" value="p"> Pitchers <br>
   </div>
-  <div class="outer">
-  Attribute
+  </div>
   <div>
-    <div>On-base</div>
-    <div>Control</div>
-    <div>Total out results</div>
-    <div>PU results</div>
-    <div>SO results</div>
-    <div>GB results</div>
-    <div>FB results</div>
-    <div>BB results</div>
-    <div>1B results</div>
-    <div>1B+ results</div>
-    <div>2B results</div>
-    <div>3B results</div>
-    <div>HR results</div>
-    <div>Points</div>
-    <div>IP</div>
-    <div>Speed</div>
-    <div>Hand</div>
-    <div>Team</div>
+  <span class="titleheading">Color Attribute</span>
+  <div>
+    <input type="radio" name="coloring" value="bb" checked="checked"> BB <br>
+    <input type="radio" name="coloring" value="hr"> HR <br>
   </div>
   </div>
-  <div class="outer">
-  Primary
-  <div> 
-    <input type="radio" name="option1" value="ob" class="bat default" checked="checked" > <br>
-    <input type="radio" name="option1" value="c" class="pit" > <br>
-    <input type="radio" name="option1" value="outs"> <br>
-    <input type="radio" name="option1" value="pu" class="pit" > <br>
-    <input type="radio" name="option1" value="so"> <br>
-    <input type="radio" name="option1" value="gb"> <br>
-    <input type="radio" name="option1" value="fb"> <br>
-    <input type="radio" name="option1" value="bb"> <br>
-    <input type="radio" name="option1" value="b1"><br>
-    <input type="radio" name="option1" value="b1p" class="bat" > <br>
-    <input type="radio" name="option1" value="b2"> <br>
-    <input type="radio" name="option1" value="b3" class="bat" > <br>
-    <input type="radio" name="option1" value="hr"> <br>
-    <input type="radio" name="option1" value="pt"> <br>
-    <input type="radio" name="option1" value="ip" class="pit" > <br>
-    <input type="radio" name="option1" value="sp" class="bat" > <br>
-    <input type="radio" name="option1" value="hd"> <br>
-    <input type="radio" name="option1" value="tm"> <br>
-  </div>
-  </div>
-  <div class="outer">
-  Secondary
-  <div> 
-    <input type="radio" name="option2" value="ob" class="bat"> <br>
-    <input type="radio" name="option2" value="c" class="pit" > <br>
-    <input type="radio" name="option2" value="outs default"  checked="checked"> <br>
-    <input type="radio" name="option2" value="pu" class="pit" > <br>
-    <input type="radio" name="option2" value="so"> <br>
-    <input type="radio" name="option2" value="gb"> <br>
-    <input type="radio" name="option2" value="fb"> <br>
-    <input type="radio" name="option2" value="bb"> <br>
-    <input type="radio" name="option2" value="b1"> <br>
-    <input type="radio" name="option2" value="b1p" class="bat" > <br>
-    <input type="radio" name="option2" value="b2"> <br>
-    <input type="radio" name="option2" value="b3" class="bat" > <br>
-    <input type="radio" name="option2" value="hr"> <br>
-    <input type="radio" name="option2" value="pt"> <br>
-    <input type="radio" name="option2" value="ip" class="pit" > <br>
-    <input type="radio" name="option2" value="sp" class="bat" > <br>
-    <input type="radio" name="option2" value="hd"> <br>
-    <input type="radio" name="option2" value="tm"> <br>
-  </div>
-  </div>
-  <div> Color Attribute
-    <input type="radio" name="coloring" value="bb" checked="checked"> OB <br>
-    <input type="radio" name="coloring" value="outs"> Speed <br>
-  </div>
-  <div> Years
+  <div>
+  <span class="titleheading">Years</span>
+  <div>
     <input type="checkbox" name="years" value="2000" checked="checked"> 2000 <br>
     <input type="checkbox" name="years" value="2001" checked="checked"> 2001 <br>
     <input type="checkbox" name="years" value="2002"> 2002 <br>
@@ -126,6 +89,73 @@
     <input type="checkbox" name="years" value="2004"> 2004 <br>
     <input type="checkbox" name="years" value="2005"> 2005 <br>
     <input type="checkbox" name="years" value="2012" checked="checked"> 2012 <br>
+  </div>
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Attribute</span>
+  <div>
+    <div class="bat">On-base</div>
+    <div class="pit">Control</div>
+    <div>Out results</div>
+    <div class="pit">PU results</div>
+    <div>SO results</div>
+    <div>GB results</div>
+    <div>FB results</div>
+    <div>BB results</div>
+    <div>1B results</div>
+    <div class="bat">1B+ results</div>
+    <div>2B results</div>
+    <div class="bat">3B results</div>
+    <div>HR results</div>
+    <div>Points</div>
+    <div class="pit">IP</div>
+    <div class="bat">Speed</div>
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Primary</span>
+  <div>
+    <input type="radio" name="option1" value="ob" class="bat bat-default" checked="checked" >
+    <input type="radio" name="option1" value="c" class="pit pit-default" >
+    <input type="radio" name="option1" value="bOuts" class="bat">
+    <input type="radio" name="option1" value="pOuts" class="pit">
+    <input type="radio" name="option1" value="pu" class="pit">
+    <input type="radio" name="option1" value="so">
+    <input type="radio" name="option1" value="gb">
+    <input type="radio" name="option1" value="fb">
+    <input type="radio" name="option1" value="bb">
+    <input type="radio" name="option1" value="b1">
+    <input type="radio" name="option1" value="b1p" class="bat">
+    <input type="radio" name="option1" value="b2">
+    <input type="radio" name="option1" value="b3" class="bat">
+    <input type="radio" name="option1" value="hr">
+    <input type="radio" name="option1" value="pt">
+    <input type="radio" name="option1" value="ip" class="pit">
+    <input type="radio" name="option1" value="sp" class="bat">
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Secondary</span>
+  <div> 
+    <input type="radio" name="option2" value="ob" class="bat">
+    <input type="radio" name="option2" value="c" class="pit">
+    <input type="radio" name="option2" value="bOuts" class="bat bat-default" checked="checked">
+    <input type="radio" name="option2" value="pOuts" class="pit pit-default">
+    <input type="radio" name="option2" value="pu" class="pit">
+    <input type="radio" name="option2" value="so">
+    <input type="radio" name="option2" value="gb">
+    <input type="radio" name="option2" value="fb">
+    <input type="radio" name="option2" value="bb">
+    <input type="radio" name="option2" value="b1">
+    <input type="radio" name="option2" value="b1p" class="bat">
+    <input type="radio" name="option2" value="b2">
+    <input type="radio" name="option2" value="b3" class="bat">
+    <input type="radio" name="option2" value="hr">
+    <input type="radio" name="option2" value="pt">
+    <input type="radio" name="option2" value="ip" class="pit">
+    <input type="radio" name="option2" value="sp" class="bat">
+  </div>
   </div>
   <div id="legend-color-boxes">
     <div id="lcb1" style="background:#bd0026"></div>
@@ -135,6 +165,8 @@
     <div id="lcb5" style="background:#fed976"></div>
     <div id="lcb6" style="background:#ffffb2"></div>
   </div>​
+  <div class="clear"></div>
+  </div>
 </body>
 <script src="d3.v3.min.js"></script>
 <script src="jquery-1.11.1.min.js"></script>
@@ -154,13 +186,29 @@ var hierarchy,
     
 var domains = {
   "ob": [4, 11],
-  "sp": [8,23],
-  "outs": [2, 8],
-  "bb": [0, 14]
+  "c": [0, 6],
+  "bOuts": [1, 9],
+  "pOuts": [11, 19],
+  "pu": [0, 4],
+  "so": [0, 10],
+  "gb": [0, 10],
+  "fb": [0, 10],
+  "bb": [0, 10],
+  "b1": [0, 14],
+  "b1p": [0, 4],
+  "b2": [0, 5],
+  "b3": [0, 5],
+  "hr": [0, 5],
+  "pt": [10, 700],
+  "ip": [4, 9],
+  "sp": [8,23]
 };
 
+// Initial selections
 var selectedYears = [];
 $("input:checkbox[name=years]:checked").each(function() { selectedYears.push($(this).val()); });
+$(".pit").hide();
+
 
 var margin = 10,
     diameter = 1000;
@@ -194,6 +242,9 @@ var svg = d3.select("body").append("svg")
 // Initialize batter data
 d3.csv("batters.csv",
   function(d) {
+    if(+d.hr > 20) d.hr = "0"; // greater than 20 values shouldn't count
+    if(+d.b3 > 20) d.b3 = "0";
+    if(+d.b2 > 20) d.b2 = "0";
     return {
       nm: d.Name,
       yr: d.year,
@@ -204,7 +255,7 @@ d3.csv("batters.csv",
       so: +d.so,
       gb: +d.gb,
       fb: +d.fb,
-      outs: +d.so + +d.gb + +d.fb,
+      bOuts: +d.so + +d.gb + +d.fb,
       bb: +d.bb,
       b1: +d.b1,
       b1p: +d.b1p,
@@ -245,7 +296,7 @@ d3.csv("pitchers.csv",
       so: +d.so,
       gb: +d.gb,
       fb: +d.fb,
-      outs: +d.pu + +d.so + +d.gb + +d.fb,
+      pOuts: +d.pu + +d.so + +d.gb + +d.fb,
       bb: +d.bb,
       b1: +d.b1,
       b2: +d.b2,
@@ -264,8 +315,8 @@ d3.csv("pitchers.csv",
 /*
 Take raw csv data and transform it into a json hierarchy based on given sort values.
 */
-function computeHierarchy(){console.log(bData);
-  var dataset = $("[name='dataset']:checked").val()
+function computeHierarchy(){
+  var dataset = $("[name='dataset']:checked").val();
   var data = dataset == "b" ? bData : pData;
   hierarchy = data.filter(function(d) { return selectedYears.indexOf(d.yr) > -1});
 
@@ -458,11 +509,25 @@ $("input:checkbox[name=years]").change(function(){
 
 // Change dataset visualized
 $(":radio[name='dataset']").change(function(){
+  updateOptions();
   computeHierarchy();
   reset();
   rePack();
   updateDisplay();
 });
+
+function updateOptions() {
+  if($("[name='dataset']:checked").val() == "b") {
+    $(".pit").hide();
+    $(".bat").show();
+    $(".bat-default").prop('checked', true);
+  }
+  else{
+    $(".pit").show();
+    $(".bat").hide();
+    $(".pit-default").prop('checked', true);
+  }
+}
 
 
 </script>
