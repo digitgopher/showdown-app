@@ -11,15 +11,16 @@
   stroke-width: 1.5px;
 }
 
-.node--leaf {
-  fill: white;
-}
-
-.label {
-  font: 30px "Helvetica Neue", Helvetica, Arial, sans-serif;
+.node--1,
+.node--2 {
+  font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: bold;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.node--leaf {
+  font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .label,
@@ -30,15 +31,15 @@
 
 </style>
 <body>
-  <div> Parameter 1
+  <div> First Parameter
     <input type="radio" name="option1" value="ob" checked="checked" > OB <br>
     <input type="radio" name="option1" value="sp"> Speed <br>
   </div>
-  <div> Parameter 2
+  <div> Second Parameter
     <input type="radio" name="option2" value="outs" checked="checked"> Outs <br>
     <input type="radio" name="option2" value="pt"> Points <br>
   </div>
-  <div> Parameter 3
+  <div> Color Attribute
     <input type="radio" name="coloring" value="ob" checked="checked"> OB <br>
     <input type="radio" name="coloring" value="sp"> Speed <br>
   </div>
@@ -76,8 +77,8 @@ var domains = {
 var selectedYears = [];
 $("input:checkbox[name=years]:checked").each(function() { selectedYears.push($(this).val()); });
 
-var margin = 20,
-    diameter = 960;
+var margin = 10,
+    diameter = 1000;
 
 var circleColor = d3.scale./*category10();*/linear()
     .domain([-1, 5])
@@ -97,7 +98,7 @@ var pack = d3.layout.pack()
 
 // Add the svg canvas
 var svg = d3.select("body").append("svg")
-    .attr("viewBox","0 0 960 960")
+    .attr("viewBox","0 0 1000 1000")
     .attr("perserveAspectRatio","xMinYMid")
     .attr("width", diameter)
     .attr("height", diameter)
@@ -232,15 +233,17 @@ function updateText(){
   text = svg.selectAll("text")
       .data(nodes)
     .enter().append("text")
-      .attr("class", "label")
+      .attr("class", getClass)
+      .attr("text-anchor", "middle")
+      .attr('dy', '0.35em')
       .style("display", function(d) { return d.parent === hierarchy ? null : "none"; })
       .text(function(d) { return appropriateName(d); });
 }
     
-function appropriateName(circle){
-  if(circle.depth == 1) return circle[curVal1]; // First level circle
-  if(circle.depth == 2) return circle[curVal2]; // Second level circle
-  if(circle.hasOwnProperty("nm")) return circle["nm"]; // leaf
+function appropriateName(d){
+  if(d.depth == 1) return d[curVal1]; // First level circle
+  if(d.depth == 2) return d[curVal2]; // Second level circle
+  if(d.hasOwnProperty("nm")) return d.nm + " (" + d.st + " " + d.yr + " " + d.tm + ")"; // leaf
   return "";
 }
 
