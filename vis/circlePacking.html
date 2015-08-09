@@ -321,7 +321,7 @@ function computeHierarchy(){
   hierarchy = data.filter(function(d) { return selectedYears.indexOf(d.yr) > -1});
 
   var element1, element2, newRoot, build;
-  var batters = {"name": "batters", "children": []};
+  var players = {"name": "players", "children": []};
   
   // Obtain selected attributes' max/min values.
   var extent1 = d3.extent(hierarchy, function(d) { return d[curVal1]; });
@@ -357,12 +357,12 @@ function computeHierarchy(){
       if(element2.children.length > 0) element1.children.push(element2);
     }
     
-    batters.children.push(element1);
+    players.children.push(element1);
   }
   // The results!
-  //$(".d").html('<pre>'+JSON.stringify(batters, null, '  ')+'</pre>');
+  //$(".d").html('<pre>'+JSON.stringify(players, null, '  ')+'</pre>');
 
-  hierarchy = batters;
+  hierarchy = players;
 }
 
 function theDisplay(){
@@ -510,6 +510,8 @@ $("input:checkbox[name=years]").change(function(){
 // Change dataset visualized
 $(":radio[name='dataset']").change(function(){
   updateOptions();
+  curVal1 = $("[name='option1']:checked").val();
+  curVal2 = $("[name='option2']:checked").val();
   computeHierarchy();
   reset();
   rePack();
