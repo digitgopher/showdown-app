@@ -262,10 +262,46 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
+// Initialize pitcher data
+d3.csv("pitchers.csv",
+  function(d) {
+    return {
+      obp: 0,
+      slg: 0,
+      
+      nm: d.Name,
+      yr: d.year,
+      st: d.set,
+      cn: +d.cardNo, // + converts to number
+      tm: d.team,
+      c: +d.control,
+      pu: +d.pu,
+      p_so: +d.so,
+      p_gb: +d.gb,
+      p_fb: +d.fb,
+      pOuts: +d.pu + +d.so + +d.gb + +d.fb,
+      p_bb: +d.bb,
+      p_b1: +d.b1 > 20 ? 0 : +d.b1,
+      p_b2: +d.b2 > 20 ? 0 : +d.b2,
+      p_hr: +d.hr > 20 ? 0 : +d.hr,
+      pt: +d.pts,
+      ip: +d.ip,
+      hd: d.hand,
+      pos: d.pos
+    };
+  },
+  function(error, root) {
+    pData = root; // data set and doesn't change.
+  }
+);
+
 // Initialize batter data
 d3.csv("batters.csv",
   function(d) {
     return {
+      obp: 0,
+      slg: 0,
+
       nm: d.Name,
       yr: d.year,
       st: d.set,
@@ -297,38 +333,9 @@ d3.csv("batters.csv",
   },
   function(error, root) {
     bData = root; // data set and doesn't change.
+    computeStatistics();
     computeHierarchy();
     theDisplay();
-  }
-);
-
-// Initialize pitcher data
-d3.csv("pitchers.csv",
-  function(d) {
-    return {
-      nm: d.Name,
-      yr: d.year,
-      st: d.set,
-      cn: +d.cardNo, // + converts to number
-      tm: d.team,
-      c: +d.control,
-      pu: +d.pu,
-      p_so: +d.so,
-      p_gb: +d.gb,
-      p_fb: +d.fb,
-      pOuts: +d.pu + +d.so + +d.gb + +d.fb,
-      p_bb: +d.bb,
-      p_b1: +d.b1 > 20 ? 0 : +d.b1,
-      p_b2: +d.b2 > 20 ? 0 : +d.b2,
-      p_hr: +d.hr > 20 ? 0 : +d.hr,
-      pt: +d.pts,
-      ip: +d.ip,
-      hd: d.hand,
-      pos: d.pos
-    };
-  },
-  function(error, root) {
-    pData = root; // data set and doesn't change.
   }
 );
 
@@ -383,6 +390,58 @@ function computeHierarchy(){
   //$(".d").html('<pre>'+JSON.stringify(players, null, '  ')+'</pre>');
 
   hierarchy = players;
+}
+
+/* Compute attributes that change based on data years selected
+
+OBP = chance of batters chart * chance of getting that result on batters chart + chance of pitchers chart * chance of getting that result on pitchers chart
+OBP = ($OB-$pC)/20*$numWaysToGetOnbaseOnBattersChart/20 + (20-($OB-$pC))/20*numWaysToGetOnbaseOnPitchersChart/20
+
+Todo: SLG
+*/
+function computeStatistics() {
+  var dataset = $("[name='dataset']:checked").val();
+  var selectedOposition;
+  var avgs;
+
+  if(dataset == "b") {
+    avgs = {"c": 0, "pOuts": 0, "p_bb": 0, "p_b1": 0, "p_b2": 0, "p_hr": 0};
+    selectedOposition = pData.filter(function(d) { return selectedYears.indexOf(d.yr) > -1});
+  
+    // Sum all.
+    for(var i = 0; i < selectedOposition.length; i++) {
+      for(var j in avgs) {
+        avgs[j] += selectedOposition[i][j];
+      }
+    }
+    // And then average them.
+    for(var j in avgs) {
+      avgs[j] /= selectedOposition.length;
+    }
+    // Set each value.
+    bData.map(function(d) {
+      d.obp = (d.ob - avgs.c) / 20 * (d.b_bb + d.b_b1 + d.b1p + d.b_b2 + d.b3 + d.b_hr) / 20 + (20 - (d.ob - avgs.c)) / 20 * (avgs.p_bb + avgs.p_b1 + avgs.p_b2 + avgs.p_hr) / 20;
+    });
+  }
+  else {
+    avgs = {"ob": 0, "bOuts": 0, "b_bb": 0, "b_b1": 0, "b1p": 0, "b_b2": 0, "b3": 0, "b_hr": 0};
+    selectedOposition = bData.filter(function(d) { return selectedYears.indexOf(d.yr) > -1});
+    
+    // Sum all.
+    for(var i = 0; i < selectedOposition.length; i++) {
+      for(var j in avgs) {
+        avgs[j] += selectedOposition[i][j];
+      }
+    }
+    // And then average them.
+    for(var j in avgs) {
+      avgs[j] /= selectedOposition.length;
+    }
+    // Set each value.
+    pData.map(function(d) {
+      d.obp = (avgs.ob - d.c) / 20 * (avgs.b_bb + avgs.b_b1 + avgs.b1p + avgs.b_b2 + avgs.b3 + avgs.b_hr) / 20 + (20 - (avgs.ob - d.c)) / 20 * (d.p_bb + d.p_b1 + d.p_b2 + d.p_hr) / 20;
+    });
+  }
 }
 
 function theDisplay(){
@@ -511,7 +570,7 @@ $(":radio[name='coloring']").change(function(){
   updateDisplay();
 });
 
-// Filter data from user input.
+// Filter data from user input. (years)
 $("input:checkbox[name=years]").change(function(){
   var v = $(this).val();
   if($(this).is(":checked")) {
@@ -521,17 +580,19 @@ $("input:checkbox[name=years]").change(function(){
     var index = selectedYears.indexOf(v);
     selectedYears.splice(index, 1); // remove the unselected year
   }
+  computeStatistics();
   computeHierarchy();
   reset();
   rePack();
   updateDisplay();
 });
 
-// Change dataset visualized
+// Change dataset visualized (batters or pitchers)
 $(":radio[name='dataset']").change(function(){
   updateOptions();
   curVal1 = $("[name='option1']:checked").val();
   curVal2 = $("[name='option2']:checked").val();
+  computeStatistics();
   computeHierarchy();
   reset();
   rePack();
