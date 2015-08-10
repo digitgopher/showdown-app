@@ -37,7 +37,7 @@
 
 .g2, .g1{
   float: left;
-  margin: 2px;
+  margin: 10px;
 }
 
 .g2 input {
@@ -73,13 +73,6 @@
   </div>
   </div>
   <div>
-  <span class="titleheading">Color Attribute</span>
-  <div>
-    <input type="radio" name="coloring" value="obp" checked="checked"> OBP <br>
-    <input type="radio" name="coloring" value="slg"> SLG <br>
-  </div>
-  </div>
-  <div>
   <span class="titleheading">Years</span>
   <div>
     <input type="checkbox" name="years" value="2000" checked="checked"> 2000 <br>
@@ -111,10 +104,11 @@
     <div>Points</div>
     <div class="pit">IP</div>
     <div class="bat">Speed</div>
+    <div>OBP</div>
   </div>
   </div>
   <div class="g2">
-  <span class="titleheading">Primary</span>
+  <span class="titleheading">First</span>
   <div>
     <input type="radio" name="option1" value="ob" class="bat bat-default" checked="checked" >
     <input type="radio" name="option1" value="c" class="pit pit-default" >
@@ -140,10 +134,12 @@
     <input type="radio" name="option1" value="pt">
     <input type="radio" name="option1" value="ip" class="pit">
     <input type="radio" name="option1" value="sp" class="bat">
+    <input type="radio" name="option1" value="b_obp" class="bat">
+    <input type="radio" name="option1" value="p_obp" class="pit">
   </div>
   </div>
   <div class="g2">
-  <span class="titleheading">Secondary</span>
+  <span class="titleheading">Second</span>
   <div> 
     <input type="radio" name="option2" value="ob" class="bat">
     <input type="radio" name="option2" value="c" class="pit">
@@ -169,6 +165,39 @@
     <input type="radio" name="option2" value="pt">
     <input type="radio" name="option2" value="ip" class="pit">
     <input type="radio" name="option2" value="sp" class="bat">
+    <input type="radio" name="option2" value="b_obp" class="bat">
+    <input type="radio" name="option2" value="p_obp" class="pit">
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Color</span>
+  <div> 
+    <input type="radio" name="coloring" value="ob" class="bat">
+    <input type="radio" name="coloring" value="c" class="pit">
+    <input type="radio" name="coloring" value="bOuts" class="bat">
+    <input type="radio" name="coloring" value="pOuts" class="pit">
+    <input type="radio" name="coloring" value="pu" class="pit">
+    <input type="radio" name="coloring" value="b_so" class="bat">
+    <input type="radio" name="coloring" value="p_so" class="pit">
+    <input type="radio" name="coloring" value="b_gb" class="bat">
+    <input type="radio" name="coloring" value="p_gb" class="pit">
+    <input type="radio" name="coloring" value="b_fb" class="bat">
+    <input type="radio" name="coloring" value="p_fb" class="pit">
+    <input type="radio" name="coloring" value="b_bb" class="bat">
+    <input type="radio" name="coloring" value="p_bb" class="pit">
+    <input type="radio" name="coloring" value="b_b1" class="bat">
+    <input type="radio" name="coloring" value="p_b1" class="pit">
+    <input type="radio" name="coloring" value="b1p" class="bat">
+    <input type="radio" name="coloring" value="b_b2" class="bat">
+    <input type="radio" name="coloring" value="p_b2" class="pit">
+    <input type="radio" name="coloring" value="b3" class="bat">
+    <input type="radio" name="coloring" value="b_hr" class="bat">
+    <input type="radio" name="coloring" value="p_hr" class="pit">
+    <input type="radio" name="coloring" value="pt">
+    <input type="radio" name="coloring" value="ip" class="pit">
+    <input type="radio" name="coloring" value="sp" class="bat">
+    <input type="radio" name="coloring" value="b_obp" class="bat bat-default" checked="checked">
+    <input type="radio" name="coloring" value="p_obp" class="pit pit-default">
   </div>
   </div>
   <div id="legend-color-boxes">
@@ -199,8 +228,8 @@ var hierarchy,
     colorBins = ["#ffffb2", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"];
     
 var domains = {
-  "obp": [.180, .480],
-  "slg": [.2, .6],
+  "b_obp": [.180, .480],
+  "p_obp": [.480, .180],
   "ob": [4, 11],
   "c": [0, 6],
   "bOuts": [1, 9],
@@ -266,8 +295,7 @@ var svg = d3.select("body").append("svg")
 d3.csv("pitchers.csv",
   function(d) {
     return {
-      obp: 0,
-      slg: 0,
+      p_obp: 0,
       
       nm: d.Name,
       yr: d.year,
@@ -299,8 +327,7 @@ d3.csv("pitchers.csv",
 d3.csv("batters.csv",
   function(d) {
     return {
-      obp: 0,
-      slg: 0,
+      b_obp: 0,
 
       nm: d.Name,
       yr: d.year,
@@ -420,7 +447,7 @@ function computeStatistics() {
     }
     // Set each value.
     bData.map(function(d) {
-      d.obp = (d.ob - avgs.c) / 20 * (d.b_bb + d.b_b1 + d.b1p + d.b_b2 + d.b3 + d.b_hr) / 20 + (20 - (d.ob - avgs.c)) / 20 * (avgs.p_bb + avgs.p_b1 + avgs.p_b2 + avgs.p_hr) / 20;
+      d.b_obp = (d.ob - avgs.c) / 20 * (d.b_bb + d.b_b1 + d.b1p + d.b_b2 + d.b3 + d.b_hr) / 20 + (20 - (d.ob - avgs.c)) / 20 * (avgs.p_bb + avgs.p_b1 + avgs.p_b2 + avgs.p_hr) / 20;
     });
   }
   else {
@@ -439,7 +466,7 @@ function computeStatistics() {
     }
     // Set each value.
     pData.map(function(d) {
-      d.obp = (avgs.ob - d.c) / 20 * (avgs.b_bb + avgs.b_b1 + avgs.b1p + avgs.b_b2 + avgs.b3 + avgs.b_hr) / 20 + (20 - (avgs.ob - d.c)) / 20 * (d.p_bb + d.p_b1 + d.p_b2 + d.p_hr) / 20;
+      d.p_obp = (avgs.ob - d.c) / 20 * (avgs.b_bb + avgs.b_b1 + avgs.b1p + avgs.b_b2 + avgs.b3 + avgs.b_hr) / 20 + (20 - (avgs.ob - d.c)) / 20 * (d.p_bb + d.p_b1 + d.p_b2 + d.p_hr) / 20;
     });
   }
 }
@@ -552,7 +579,7 @@ function setLegend(){
 // Event handlers
 //*******************
 
-// Change data from user input.
+// Change dimensions from user input.
 $(":radio[name*='option']").change(function(){
   curVal1 = $("[name='option1']:checked").val();
   curVal2 = $("[name='option2']:checked").val();
@@ -592,6 +619,8 @@ $(":radio[name='dataset']").change(function(){
   updateOptions();
   curVal1 = $("[name='option1']:checked").val();
   curVal2 = $("[name='option2']:checked").val();
+  curVal3 = $("[name='coloring']:checked").val();
+  cardColor.domain(domains[curVal3]);
   computeStatistics();
   computeHierarchy();
   reset();
