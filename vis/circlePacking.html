@@ -23,6 +23,10 @@
   font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.small-text {
+  font: 9px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .label,
 .node--root,
 .node--leaf {
@@ -236,7 +240,8 @@ var hierarchy,
     pData,
     nodes,
     masterCircle,
-    text,
+    text1, // using 2 as a hack for 2 lines of text, since wrapping in a circle is hard.
+    text2,
     view, // magic. Actually set in zoomTo.
     curVal1 = $("[name='option1']:checked").val(),
     curVal2 = $("[name='option2']:checked").val(),
@@ -516,18 +521,26 @@ function updateDisplay(){
       .style("fill", function(d) { return d.children ? circleColor(d.depth) : cardColor(d[curVal3]); })
       .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 
-  text = svg.selectAll("text")
+  text1 = svg.selectAll("text1")
       .data(nodes)
     .enter().append("text")
       .attr("class", getClass)
       .attr("text-anchor", "middle")
       .attr('dy', '0.35em')
       .style("display", function(d) { return d.parent === hierarchy ? null : "none"; })
-      .text(function(d) { return appropriateName(d); });
+      .text(function(d) { return appropriateName(d, 1); });
+  text2 = svg.selectAll("text2")
+      .data(nodes)
+    .enter().append("text")
+      .attr("class", "small-text")
+      .attr("text-anchor", "middle")
+      .attr('dy', '1.5em')
+      .style("display", function(d) { return d.parent === hierarchy ? null : "none"; })
+      .text(function(d) { return appropriateName(d, 2); });
 }
 
 function updateLegend() {
-  console.log(cardColor.quantiles());
+  //console.log(cardColor.quantiles());
   var q = cardColor.quantiles().map(round);
   $("#lcb6").text(q[0] + " or less");
   $("#lcb5").text(q[0] + " - " + q[1]);
@@ -552,10 +565,13 @@ function updateLegend() {
   }
 }
 
-function appropriateName(d){
-  if(d.depth == 1) return d[curVal1]; // First level circle
-  if(d.depth == 2) return d[curVal2]; // Second level circle
-  if(d.hasOwnProperty("nm")) return d.nm + " (" + d.st + " " + d.yr + " " + d.tm + ")"; // leaf
+function appropriateName(d, row){
+  if(d.depth == 1 && row == 1) return d[curVal1]; // First level circle
+  if(d.depth == 2 && row == 1) return d[curVal2]; // Second level circle
+  if(d.depth == 3) {  // leaf
+    if(row == 1) return d.nm;
+    if(row == 2) return "(" + d.st + " " + d.yr + " " + d.tm + ")";
+  }
   return "";
 }
 
@@ -563,7 +579,7 @@ function getClass(circle) {
   if(!circle.parent) return "node node--root";
   if(circle.depth == 1) return "node node--1";
   if(circle.depth == 2) return "node node--2";
-  if(circle.hasOwnProperty("nm")) return "node node--leaf";
+  if(circle.depth == 3) return "node node--leaf";
   return "";
 }
 
