@@ -30,14 +30,22 @@
 }
 
 #legend-color-boxes div {
-  float: right;
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
-.g2, .g1{
+#legend-text div {
+  height: 30px;
+}
+
+.g2, .g1, #legend-text {
   float: left;
   margin: 10px;
+}
+
+#legend-color-boxes {
+  float: left;
+  margin-top: 5px;
 }
 
 .g2 input {
@@ -63,6 +71,7 @@
 
 </style>
 <body>
+<form autocomplete="off">
   <div id="vis-controls">
   <div class="g1">
   <div>
@@ -196,16 +205,27 @@
     <input type="radio" name="coloring" value="p_obp" class="pit pit-default">
   </div>
   </div>
+  <div id="legend-text">
+    <span class="titleheading">Color Scale</span>
+    <div id="lcb1"></div>
+    <div id="lcb2"></div>
+    <div id="lcb3"></div>
+    <div id="lcb4"></div>
+    <div id="lcb5"></div>
+    <div id="lcb6"></div>
+  </div>​
   <div id="legend-color-boxes">
-    <div id="lcb1" style="background:#bd0026"></div>
-    <div id="lcb2" style="background:#f03b20"></div>
-    <div id="lcb3" style="background:#fd8d3c"></div>
-    <div id="lcb4" style="background:#feb24c"></div>
-    <div id="lcb5" style="background:#fed976"></div>
-    <div id="lcb6" style="background:#ffffb2"></div>
+    <span class="titleheading">&zwnj;</span>
+    <div style="background:#bd0026"></div>
+    <div style="background:#f03b20"></div>
+    <div style="background:#fd8d3c"></div>
+    <div style="background:#feb24c"></div>
+    <div style="background:#fed976"></div>
+    <div style="background:#ffffb2"></div>
   </div>​
   <div class="clear"></div>
   </div>
+</form>
 </body>
 <script src="d3.v3.min.js"></script>
 <script src="jquery-1.11.1.min.js"></script>
@@ -247,7 +267,7 @@ var domains = {
   "b3": [0, 5],
   "b_hr": [0, 5],
   "p_hr": [0, 2],
-  "pt": [10, 700],
+  "pt": [10, 650],
   "ip": [4, 9],
   "sp": [8,23]
 };
@@ -266,9 +286,11 @@ var circleColor = d3.scale./*category10();*/linear()
     .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     .interpolate(d3.interpolateHcl);
     
-var cardColor = d3.scale.quantize()
+var cardColor = d3.scale.quantile() // scale quantize doesn't have a .quantiles() function
     .domain(domains[curVal3])
     .range(colorBins);
+
+updateLegend();
 
 var pack = d3.layout.pack()
     .padding(2)
@@ -503,7 +525,33 @@ function updateDisplay(){
       .style("display", function(d) { return d.parent === hierarchy ? null : "none"; })
       .text(function(d) { return appropriateName(d); });
 }
-    
+
+function updateLegend() {
+  console.log(cardColor.quantiles());
+  var q = cardColor.quantiles().map(round);
+  $("#lcb6").text(q[0] + " or less");
+  $("#lcb5").text(q[0] + " - " + q[1]);
+  $("#lcb4").text(q[1] + " - " + q[2]);
+  $("#lcb3").text(q[2] + " - " + q[3]);
+  $("#lcb2").text(q[3] + " - " + q[4]);
+  $("#lcb1").text(q[4] + " or more");
+  
+  function round(d) {
+    if (curVal3.indexOf("obp") > -1) {
+      return d.toFixed(3);
+    }
+    else if (curVal3 == "pt") {
+      return Number(d.toPrecision(2));
+    }
+    else if (curVal3 == "ob") {
+      return d.toFixed();
+    }
+    else {
+      return Math.round(d*100)/100;
+    }
+  }
+}
+
 function appropriateName(d){
   if(d.depth == 1) return d[curVal1]; // First level circle
   if(d.depth == 2) return d[curVal2]; // Second level circle
@@ -589,6 +637,7 @@ $(":radio[name*='option']").change(function(){
 $(":radio[name='coloring']").change(function(){
   curVal3 = $("[name='coloring']:checked").val();
   cardColor.domain(domains[curVal3]);
+  updateLegend();
   reset();
   updateDisplay();
 });
@@ -617,6 +666,7 @@ $(":radio[name='dataset']").change(function(){
   curVal2 = $("[name='option2']:checked").val();
   curVal3 = $("[name='coloring']:checked").val();
   cardColor.domain(domains[curVal3]);
+  updateLegend();
   computeStatistics();
   computeHierarchy();
   reset();
