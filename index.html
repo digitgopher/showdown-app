@@ -421,6 +421,164 @@ layout: default
     
     
 </div>
+<div id="circle-packing">
+<form autocomplete="off">
+  <div id="vis-controls">
+  <div class="g1">
+  <div>
+  <span class="titleheading">Data</span>
+  <div>
+    <input type="radio" name="dataset" value="b" checked="checked" > Batters <br>
+    <input type="radio" name="dataset" value="p"> Pitchers <br>
+  </div>
+  </div>
+  <div>
+  <span class="titleheading">Years</span>
+  <div>
+    <input type="checkbox" name="years" value="2000" checked="checked"> 2000 <br>
+    <input type="checkbox" name="years" value="2001" checked="checked"> 2001 <br>
+    <input type="checkbox" name="years" value="2002"> 2002 <br>
+    <input type="checkbox" name="years" value="2003"> 2003 <br>
+    <input type="checkbox" name="years" value="2004"> 2004 <br>
+    <input type="checkbox" name="years" value="2005"> 2005 <br>
+    <input type="checkbox" name="years" value="2012" checked="checked"> 2012 <br>
+  </div>
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Attribute</span>
+  <div>
+    <div class="bat">On-base</div>
+    <div class="pit">Control</div>
+    <div>Out results</div>
+    <div class="pit">PU results</div>
+    <div>SO results</div>
+    <div>GB results</div>
+    <div>FB results</div>
+    <div>BB results</div>
+    <div>1B results</div>
+    <div class="bat">1B+ results</div>
+    <div>2B results</div>
+    <div class="bat">3B results</div>
+    <div>HR results</div>
+    <div>Points</div>
+    <div class="pit">IP</div>
+    <div class="bat">Speed</div>
+    <div>OBP</div>
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">First</span>
+  <div>
+    <input type="radio" name="option1" value="ob" class="bat bat-default" checked="checked" >
+    <input type="radio" name="option1" value="c" class="pit pit-default" >
+    <input type="radio" name="option1" value="bOuts" class="bat">
+    <input type="radio" name="option1" value="pOuts" class="pit">
+    <input type="radio" name="option1" value="pu" class="pit">
+    <input type="radio" name="option1" value="b_so" class="bat">
+    <input type="radio" name="option1" value="p_so" class="pit">
+    <input type="radio" name="option1" value="b_gb" class="bat">
+    <input type="radio" name="option1" value="p_gb" class="pit">
+    <input type="radio" name="option1" value="b_fb" class="bat">
+    <input type="radio" name="option1" value="p_fb" class="pit">
+    <input type="radio" name="option1" value="b_bb" class="bat">
+    <input type="radio" name="option1" value="p_bb" class="pit">
+    <input type="radio" name="option1" value="b_b1" class="bat">
+    <input type="radio" name="option1" value="p_b1" class="pit">
+    <input type="radio" name="option1" value="b1p" class="bat">
+    <input type="radio" name="option1" value="b_b2" class="bat">
+    <input type="radio" name="option1" value="p_b2" class="pit">
+    <input type="radio" name="option1" value="b3" class="bat">
+    <input type="radio" name="option1" value="b_hr" class="bat">
+    <input type="radio" name="option1" value="p_hr" class="pit">
+    <input type="radio" name="option1" value="pt">
+    <input type="radio" name="option1" value="ip" class="pit">
+    <input type="radio" name="option1" value="sp" class="bat">
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Second</span>
+  <div> 
+    <input type="radio" name="option2" value="ob" class="bat">
+    <input type="radio" name="option2" value="c" class="pit">
+    <input type="radio" name="option2" value="bOuts" class="bat bat-default" checked="checked">
+    <input type="radio" name="option2" value="pOuts" class="pit pit-default">
+    <input type="radio" name="option2" value="pu" class="pit">
+    <input type="radio" name="option2" value="b_so" class="bat">
+    <input type="radio" name="option2" value="p_so" class="pit">
+    <input type="radio" name="option2" value="b_gb" class="bat">
+    <input type="radio" name="option2" value="p_gb" class="pit">
+    <input type="radio" name="option2" value="b_fb" class="bat">
+    <input type="radio" name="option2" value="p_fb" class="pit">
+    <input type="radio" name="option2" value="b_bb" class="bat">
+    <input type="radio" name="option2" value="p_bb" class="pit">
+    <input type="radio" name="option2" value="b_b1" class="bat">
+    <input type="radio" name="option2" value="p_b1" class="pit">
+    <input type="radio" name="option2" value="b1p" class="bat">
+    <input type="radio" name="option2" value="b_b2" class="bat">
+    <input type="radio" name="option2" value="p_b2" class="pit">
+    <input type="radio" name="option2" value="b3" class="bat">
+    <input type="radio" name="option2" value="b_hr" class="bat">
+    <input type="radio" name="option2" value="p_hr" class="pit">
+    <input type="radio" name="option2" value="pt">
+    <input type="radio" name="option2" value="ip" class="pit">
+    <input type="radio" name="option2" value="sp" class="bat">
+  </div>
+  </div>
+  <div class="g2">
+  <span class="titleheading">Color</span>
+  <div> 
+    <input type="radio" name="coloring" value="ob" class="bat">
+    <input type="radio" name="coloring" value="c" class="pit">
+    <input type="radio" name="coloring" value="bOuts" class="bat">
+    <input type="radio" name="coloring" value="pOuts" class="pit">
+    <input type="radio" name="coloring" value="pu" class="pit">
+    <input type="radio" name="coloring" value="b_so" class="bat">
+    <input type="radio" name="coloring" value="p_so" class="pit">
+    <input type="radio" name="coloring" value="b_gb" class="bat">
+    <input type="radio" name="coloring" value="p_gb" class="pit">
+    <input type="radio" name="coloring" value="b_fb" class="bat">
+    <input type="radio" name="coloring" value="p_fb" class="pit">
+    <input type="radio" name="coloring" value="b_bb" class="bat">
+    <input type="radio" name="coloring" value="p_bb" class="pit">
+    <input type="radio" name="coloring" value="b_b1" class="bat">
+    <input type="radio" name="coloring" value="p_b1" class="pit">
+    <input type="radio" name="coloring" value="b1p" class="bat">
+    <input type="radio" name="coloring" value="b_b2" class="bat">
+    <input type="radio" name="coloring" value="p_b2" class="pit">
+    <input type="radio" name="coloring" value="b3" class="bat">
+    <input type="radio" name="coloring" value="b_hr" class="bat">
+    <input type="radio" name="coloring" value="p_hr" class="pit">
+    <input type="radio" name="coloring" value="pt">
+    <input type="radio" name="coloring" value="ip" class="pit">
+    <input type="radio" name="coloring" value="sp" class="bat">
+    <input type="radio" name="coloring" value="b_obp" class="bat bat-default" checked="checked">
+    <input type="radio" name="coloring" value="p_obp" class="pit pit-default">
+  </div>
+  </div>
+  <div id="legend-text">
+    <span class="titleheading">Color Scale</span>
+    <div id="lcb1"></div>
+    <div id="lcb2"></div>
+    <div id="lcb3"></div>
+    <div id="lcb4"></div>
+    <div id="lcb5"></div>
+    <div id="lcb6"></div>
+  </div>​
+  <div id="legend-color-boxes">
+    <span class="titleheading">&zwnj;</span>
+    <div style="background:#bd0026"></div>
+    <div style="background:#f03b20"></div>
+    <div style="background:#fd8d3c"></div>
+    <div style="background:#feb24c"></div>
+    <div style="background:#fed976"></div>
+    <div style="background:#ffffb2"></div>
+  </div>​
+  <div class="clear"></div>
+  </div>
+</form>
+</div>
+
 
 <p>&nbsp;</p>
 <p><a href="https://github.com/digitgopher/showdown-app">View this project on Github.</a> Also check out our <a href="https://github.com/digitgopher/MLBShowdownStatistics">model</a> for creating statistically accurate MLB Showdown baseball cards.</p>
