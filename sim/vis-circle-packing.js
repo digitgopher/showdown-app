@@ -71,7 +71,7 @@ var pack = d3.layout.pack()
     .value(function(d) { return d.hasOwnProperty("bb") ? 1 : 1; })
 
 // Add the svg canvas
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#circle-packing-container").append("svg")
     .attr("viewBox","0 0 1000 1000")
     .attr("perserveAspectRatio","xMinYMid")
     .attr("width", diameter)
@@ -265,7 +265,7 @@ function theDisplay(){
   rePack();
   updateDisplay();
 
-  d3.select("body")
+  d3.select("#circle-packing-container")
     .on("click", function() { zoom(hierarchy); });
 
   zoomTo([hierarchy.x, hierarchy.y, hierarchy.r * 2 + margin]);

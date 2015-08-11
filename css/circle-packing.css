@@ -1,4 +1,11 @@
 
+/* Feature disabled until ready */
+#circle-packing, #circle-packing-container{
+  display: none;
+}
+
+
+
 .node {
   cursor: pointer;
 }
