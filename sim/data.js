@@ -6,13 +6,13 @@ batterlist.append($('<option value="None" selected="Selected">Select player</opt
   // Bind players to dropdowns
   $(p).each(function(index, element) {
       $('.pitcherselect')
-        .append($('<option>')
+        .append($('<option></option>')
         .data('player', element)
         .text(element.nameFull + ", " + element.yearID + ", " + element.setID));
   });
   $.each(b, function(index, element) {
       batterlist
-        .append($('<option>')
+        .append($('<option></option>')
         .data('player', element)
         .text(element.nameFull + ", " + element.yearID + ", " + element.setID));
   });
