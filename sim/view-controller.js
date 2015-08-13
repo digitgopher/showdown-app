@@ -18,39 +18,39 @@ define(["jquery","sim/validate"], function($, v) {
 
   
   // Set values when player is selected
-  $('.playerselect').change(function() {
+  $('.playerselect-td').change(function() {
     var player = $(this).find(':selected').data('player');
     if(typeof player !== "undefined"){ // make sure it wasn't set to blank
-      $(this).parent().siblings().find('[name=c]').val(player["control"]);
-      $(this).parent().siblings().find('[name=ob]').val(player["onbase"]);
-      $(this).parent().siblings().find('[name=pu]').val(player["PU"]);
-      $(this).parent().siblings().find('[name=so]').val(player["SO"]);
-      $(this).parent().siblings().find('[name=gb]').val(player["GB"]);
-      $(this).parent().siblings().find('[name=fb]').val(player["FB"]);
-      $(this).parent().siblings().find('[name=bb]').val(player["BB"]);
-      $(this).parent().siblings().find('[name=1b]').val(player["1B"]);
-      $(this).parent().siblings().find('[name=1b\\+]').val(player["1Bplus"]);
-      $(this).parent().siblings().find('[name=2b]').val(player["2B"]);
-      $(this).parent().siblings().find('[name=3b]').val(player["3B"]);
-      $(this).parent().siblings().find('[name=hr]').val(player["HR"]);
-      $(this).parent().siblings().find('[name=ip]').val(player["IP"]);
-      $(this).parent().siblings().find('[name=sp]').val(player["speed"]);
+      $(this).siblings().find('[name=c]').val(player["control"]);
+      $(this).siblings().find('[name=ob]').val(player["onbase"]);
+      $(this).siblings().find('[name=pu]').val(player["PU"]);
+      $(this).siblings().find('[name=so]').val(player["SO"]);
+      $(this).siblings().find('[name=gb]').val(player["GB"]);
+      $(this).siblings().find('[name=fb]').val(player["FB"]);
+      $(this).siblings().find('[name=bb]').val(player["BB"]);
+      $(this).siblings().find('[name=1b]').val(player["1B"]);
+      $(this).siblings().find('[name=1b\\+]').val(player["1Bplus"]);
+      $(this).siblings().find('[name=2b]').val(player["2B"]);
+      $(this).siblings().find('[name=3b]').val(player["3B"]);
+      $(this).siblings().find('[name=hr]').val(player["HR"]);
+      $(this).siblings().find('[name=ip]').val(player["IP"]);
+      $(this).siblings().find('[name=sp]').val(player["speed"]);
     }
     else{
-      $(this).parent().siblings().find('[name=c]').val("");
-      $(this).parent().siblings().find('[name=ob]').val("");
-      $(this).parent().siblings().find('[name=pu]').val("");
-      $(this).parent().siblings().find('[name=so]').val("");
-      $(this).parent().siblings().find('[name=gb]').val("");
-      $(this).parent().siblings().find('[name=fb]').val("");
-      $(this).parent().siblings().find('[name=bb]').val("");
-      $(this).parent().siblings().find('[name=1b]').val("");
-      $(this).parent().siblings().find('[name=1b\\+]').val("");
-      $(this).parent().siblings().find('[name=2b]').val("");
-      $(this).parent().siblings().find('[name=3b]').val("");
-      $(this).parent().siblings().find('[name=hr]').val("");
-      $(this).parent().siblings().find('[name=ip]').val("");
-      $(this).parent().siblings().find('[name=sp]').val("");
+      $(this).siblings().find('[name=c]').val("");
+      $(this).siblings().find('[name=ob]').val("");
+      $(this).siblings().find('[name=pu]').val("");
+      $(this).siblings().find('[name=so]').val("");
+      $(this).siblings().find('[name=gb]').val("");
+      $(this).siblings().find('[name=fb]').val("");
+      $(this).siblings().find('[name=bb]').val("");
+      $(this).siblings().find('[name=1b]').val("");
+      $(this).siblings().find('[name=1b\\+]').val("");
+      $(this).siblings().find('[name=2b]').val("");
+      $(this).siblings().find('[name=3b]').val("");
+      $(this).siblings().find('[name=hr]').val("");
+      $(this).siblings().find('[name=ip]').val("");
+      $(this).siblings().find('[name=sp]').val("");
     }
     v.validateView1();
   });

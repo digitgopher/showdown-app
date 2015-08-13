@@ -39,7 +39,7 @@ layout: default
         <table>
           <tr><th>Name</th><th>Control</th><th>PU</th><th>SO</th><th>GB</th><th>FB</th><th>BB</th><th>1B</th><th>2B</th><th>HR</th><th style="display: none;">IP</th></tr>
           <tr>
-            <td><select name="player-name" class="playerselect pitcherselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="playerselect-td"><select name="player-name" class="playerselect pitcherselect" ><option value="None" selected="Selected">Select player</option></select></td>
             <td><input type="text" size="1" class="bkgd"name="c" readonly></td>
             <td><input type="text" size="1" class="p1c bkgd" name="pu" readonly></td>
             <td><input type="text" size="1" class="p1c bkgd" name="so" readonly></td>
@@ -203,7 +203,7 @@ layout: default
           <tr><th class="lineup-order">Order</th><th>Name</th><th>Onbase</th><th>SO</th><th>GB</th><th>FB</th><th>BB</th><th>1B</th><th>1B+</th><th>2B</th><th>3B</th><th>HR</th><th class="speed-input" style="display:none">Speed</th></tr>
           <tr id="first-batter">
             <td class="lineup-order">1st</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b1c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b1c bkgd" name="gb" readonly></td>
@@ -218,7 +218,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">2nd</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b2c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b2c bkgd" name="gb" readonly></td>
@@ -233,7 +233,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">3rd</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b3c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b3c bkgd" name="gb" readonly></td>
@@ -248,7 +248,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">4th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b4c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b4c bkgd" name="gb" readonly></td>
@@ -263,7 +263,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">5th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b5c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b5c bkgd" name="gb" readonly></td>
@@ -278,7 +278,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">6th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b6c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b6c bkgd" name="gb" readonly></td>
@@ -293,7 +293,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">7th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b7c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b7c bkgd" name="gb" readonly></td>
@@ -308,7 +308,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">8th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b8c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b8c bkgd" name="gb" readonly></td>
@@ -323,7 +323,7 @@ layout: default
           </tr>
           <tr class="last-eight-batters">
             <td class="lineup-order">9th</td>
-            <td><select name="player-name" class="playerselect batterselect" ><option value="None" selected="Selected">Select player</option></select></td>
+            <td class="batterselect-td playerselect-td"></td>
             <td><input type="text" size="1" class="bkgd" name="ob" readonly></td>
             <td><input type="text" size="1" class="b9c bkgd" name="so" readonly></td>
             <td><input type="text" size="1" class="b9c bkgd" name="gb" readonly></td>
