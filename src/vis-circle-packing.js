@@ -153,7 +153,7 @@ d3.csv("data/batters.csv",
     refreshScreen();
 
     d3.select("#circle-packing-container")
-      .on("click", function() { zoom(hierarchy); });
+      .on("click", resetZoom);
 
     zoomTo([hierarchy.x, hierarchy.y, hierarchy.r * 2 + margin]);
   }
@@ -342,11 +342,15 @@ function getClass(circle) {
   return "";
 }
 
+function resetZoom() {
+  zoom(hierarchy);
+}
+
 function zoom(d) {
   var focus0 = focus; focus = d;
 
   var transition = d3.transition()
-    .duration(d3.event.altKey ? 7500 : 750)
+    .duration(d3.event && d3.event.altKey ? 7500 : 750)
     .tween("zoom", function(d) {
       var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
       return function(t) { zoomTo(i(t)); };
@@ -403,6 +407,7 @@ function refreshScreen() {
   reset();
   rePack();
   updateDisplay();
+  resetZoom();
 }
 
 // Change dimensions from user input.
@@ -419,6 +424,7 @@ $(":radio[name='coloring']").change(function(){
   updateLegend();
   reset();
   updateDisplay();
+  resetZoom();
 });
 
 // Filter data from user input. (years)
