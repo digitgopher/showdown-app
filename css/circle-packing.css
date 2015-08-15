@@ -1,10 +1,4 @@
 
-/* Feature disabled until ready */
-#circle-packing, #circle-packing-container{
-  display: none;
-}
-
-
 
 .node {
   cursor: pointer;
@@ -58,7 +52,8 @@
 
 .g2 input {
   display: block;
-  height: 17px;
+  height: 20px;
+  margin-top: .5px;
 }
 
 .g2 > div > div {

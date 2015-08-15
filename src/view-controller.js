@@ -67,6 +67,14 @@ define(["jquery","src/validate","src/run","src/sim-data"], function($, v, r, d) 
     oldoldState = oldState;
   });
   
-  
+  // Top level navigation
+  $('#top-nav-button-simulation').click(function() {
+    $('#simulation').show();
+    $('#circle-packing, #circle-packing-container').hide();
+  });
+  $('#top-nav-button-circle-packing').click(function() {
+    $('#circle-packing, #circle-packing-container').show();
+    $('#simulation').hide();
+  });
 
 });

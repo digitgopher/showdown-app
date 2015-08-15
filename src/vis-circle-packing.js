@@ -50,7 +50,7 @@ $(".pit").hide();
 
 
 var margin = 10,
-    diameter = 1000;
+    diameter = 1260;
 
 var circleColor = d3.scale./*category10();*/linear()
     .domain([-1, 5])
@@ -72,7 +72,7 @@ var pack = d3.layout.pack()
 
 // Add the svg canvas
 var svg = d3.select("#circle-packing-container").append("svg")
-    .attr("viewBox","0 0 1000 1000")
+    .attr("viewBox","0 0 1260 1260")
     .attr("perserveAspectRatio","xMinYMid")
     .attr("width", diameter)
     .attr("height", diameter)

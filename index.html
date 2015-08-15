@@ -4,7 +4,9 @@ layout: default
 
 
 <div class="loading">Loading Player Data&#8230;</div>
-<div id="simulation">
+<button class="top-nav-button" id="top-nav-button-circle-packing">Visualize</button>
+<button class="top-nav-button" id="top-nav-button-simulation">Simulate</button>
+<div id="simulation" style="display: none;">
   <div class="instr">
     {% capture content %}
       {% include sim-description.md %}
