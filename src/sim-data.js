@@ -1,11 +1,16 @@
 define(["jquery", "chosen","pitcherData", "batterData"], function($, c, p, b) {
 
-var batterlist = $('<select name="player-name" class="playerselect"></select>');
-batterlist.append($('<option value="None" selected="Selected">Select player</option>'));
+  // duplication necessary because jquery doesn't seem to like reusing a variable
+  var batterlist = $('<select name="player-name" class="playerselect"></select>');
+  var pitcherlist = $('<select name="player-name" class="playerselect"></select>');
+
+  // Set default value
+  batterlist.append($('<option value="None" selected="Selected">Select player</option>'));
+  pitcherlist.append($('<option value="None" selected="Selected">Select player</option>'));
 
   // Bind players to dropdowns
   $(p).each(function(index, element) {
-      $('.pitcherselect')
+      pitcherlist
         .append($('<option></option>')
         .data('player', element)
         .text(element.nameFull + ", " + element.yearID + ", " + element.setID));
@@ -16,7 +21,8 @@ batterlist.append($('<option value="None" selected="Selected">Select player</opt
         .data('player', element)
         .text(element.nameFull + ", " + element.yearID + ", " + element.setID));
   });
-
+  
+  $('.pitcherselect-td').append(pitcherlist);
   $('.batterselect-td').append(batterlist);
 
   //Set up chosen dropdowns
