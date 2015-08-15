@@ -1,4 +1,4 @@
-define(["jquery","sim/validate"], function($, v) {
+define(["jquery","src/validate","src/run","src/sim-data"], function($, v, r, d) {
 
   // Initialize validators
   var individualSum20Listeners = [];

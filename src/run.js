@@ -1,4 +1,4 @@
-define(["jquery","sim/sim"], function($, simulation) {
+define(["jquery","src/sim"], function($, simulation) {
 
 /********* EVERYTHING THAT HAPPENS WHEN THE RUN SIMULATION BUTTON IS CLICKED ***********/
   $('#run-simulation').on("click", function() {

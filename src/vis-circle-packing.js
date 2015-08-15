@@ -150,8 +150,12 @@ d3.csv("data/batters.csv",
   function(error, root) {
     bData = root; // data set and doesn't change.
     computeStatistics();
-    computeHierarchy();
-    theDisplay();
+    refreshScreen();
+
+    d3.select("#circle-packing-container")
+      .on("click", function() { zoom(hierarchy); });
+
+    zoomTo([hierarchy.x, hierarchy.y, hierarchy.r * 2 + margin]);
   }
 );
 
@@ -258,17 +262,6 @@ function computeStatistics() {
       d.p_obp = (avgs.ob - d.c) / 20 * (avgs.b_bb + avgs.b_b1 + avgs.b1p + avgs.b_b2 + avgs.b3 + avgs.b_hr) / 20 + (20 - (avgs.ob - d.c)) / 20 * (d.p_bb + d.p_b1 + d.p_b2 + d.p_hr) / 20;
     });
   }
-}
-
-function theDisplay(){
-
-  rePack();
-  updateDisplay();
-
-  d3.select("#circle-packing-container")
-    .on("click", function() { zoom(hierarchy); });
-
-  zoomTo([hierarchy.x, hierarchy.y, hierarchy.r * 2 + margin]);
 }
 
 function reset(){
@@ -405,14 +398,18 @@ function setLegend(){
 // Event handlers
 //*******************
 
-// Change dimensions from user input.
-$(":radio[name*='option']").change(function(){
-  curVal1 = $("[name='option1']:checked").val();
-  curVal2 = $("[name='option2']:checked").val();
+function refreshScreen() {
   computeHierarchy();
   reset();
   rePack();
   updateDisplay();
+}
+
+// Change dimensions from user input.
+$(":radio[name*='option']").change(function(){
+  curVal1 = $("[name='option1']:checked").val();
+  curVal2 = $("[name='option2']:checked").val();
+  refreshScreen();
 });
 
 // Change coloring attribute from user input.
@@ -435,10 +432,7 @@ $("input:checkbox[name=years]").change(function(){
     selectedYears.splice(index, 1); // remove the unselected year
   }
   computeStatistics();
-  computeHierarchy();
-  reset();
-  rePack();
-  updateDisplay();
+  refreshScreen();
 });
 
 // Change dataset visualized (batters or pitchers)
@@ -450,10 +444,7 @@ $(":radio[name='dataset']").change(function(){
   cardColor.domain(domains[curVal3]);
   updateLegend();
   computeStatistics();
-  computeHierarchy();
-  reset();
-  rePack();
-  updateDisplay();
+  refreshScreen();
 });
 
 function updateOptions() {
