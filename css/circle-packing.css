@@ -40,14 +40,18 @@
   height: 30px;
 }
 
-.g2, .g1, #legend-text {
+.g2 {
   float: left;
   margin: 10px;
 }
 
 #legend-color-boxes {
-  float: left;
   margin-top: 5px;
+}
+
+#g1, #legend-text, #legend-color-boxes {
+  float: right;
+  margin: 10px;
 }
 
 .g2 input {
